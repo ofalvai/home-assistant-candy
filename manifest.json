@@ -1,0 +1,15 @@
+{
+  "domain": "candy",
+  "name": "Candy",
+  "version": "1.0.0",
+  "config_flow": true,
+  "documentation": "https://github.com/ofalvai/home-assistant-candy",
+  "issue_tracker":  "https://github.com/ofalvai/home-assistant-candy/issues",
+  "requirements": ["backoff==1.11.1"],
+  "ssdp": [],
+  "zeroconf": [],
+  "homekit": {},
+  "dependencies": [],
+  "codeowners": ["@ofalvai"],
+  "iot_class": "local_polling"
+}
