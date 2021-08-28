@@ -22,10 +22,11 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     """Set up Candy from a config entry."""
 
     ip_address = config_entry.data[CONF_IP_ADDRESS]
-    encryption_key = config_entry.data[CONF_PASSWORD]
+    encryption_key = config_entry.data.get(CONF_PASSWORD, "")
+    use_encryption = config_entry.data.get(CONF_KEY_USE_ENCRYPTION, True)
 
     session = async_get_clientsession(hass)
-    client = CandyClient(session, ip_address, encryption_key)
+    client = CandyClient(session, ip_address, encryption_key, use_encryption)
 
     async def update_status():
         try:
@@ -34,8 +35,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
                 _LOGGER.debug("Fetched status: %s", status)
                 return status
         except Exception as err:
-            _LOGGER.error(err)
-            raise UpdateFailed(f"Error communicating with API: {err}")
+            raise UpdateFailed(f"Error communicating with API: {repr(err)}")
 
     coordinator = DataUpdateCoordinator(
         hass,

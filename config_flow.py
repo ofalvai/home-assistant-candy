@@ -18,19 +18,19 @@ _LOGGER = logging.getLogger(__name__)
 
 STEP_DATA_SCHEMA = vol.Schema({
     vol.Required(CONF_IP_ADDRESS): str,
-    vol.Required(CONF_PASSWORD): str
+    vol.Required(CONF_KEY_USE_ENCRYPTION, default=True): bool,
+    vol.Optional(CONF_PASSWORD): str
 })
 
 
 async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> bool:
     """Validate the user input allows us to connect."""
-    # TODO: validate IP, non-emptyness for both
     # Everything is validated in the schema
     return True
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for GreenGo."""
+    """Handle a config flow for Candy."""
 
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL

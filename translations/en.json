@@ -10,7 +10,8 @@
             "user": {
                 "data": {
                     "ip_address": "Device IP address",
-                    "password": "Encryption key"
+                    "password": "Encryption key",
+                    "use_encryption": "Use encryption key"
                 }
             }
         }
