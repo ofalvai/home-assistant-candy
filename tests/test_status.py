@@ -4,8 +4,8 @@ import pytest
 from aresponses import ResponsesMockServer
 
 from .common import TEST_IP, TEST_ENCRYPTION_KEY, status_response
-from candy.client import CandyClient
-from candy.client.model import MachineState, ProgramState
+from ..client import CandyClient
+from ..client.model import MachineState, ProgramState
 
 
 @pytest.mark.asyncio
