@@ -21,6 +21,9 @@ class CandyClient:
 
     @backoff.on_exception(backoff.expo, aiohttp.ClientError, max_tries=10)
     @backoff.on_exception(backoff.expo, TimeoutError, max_tries=10)
+    async def status_with_retry(self) -> MachineStatus:
+        return await self.status()
+
     async def status(self) -> MachineStatus:
         url = f"http://{self.device_ip}/http-read.json?encrypted={1 if self.use_encryption else 0}"
         async with self.session.get(url) as resp:
