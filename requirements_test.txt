@@ -2,3 +2,6 @@ pytest==6.2.4
 pytest-homeassistant-custom-component==0.4.3
 aresponses==2.1.4
 pytest-aiohttp==0.3.0
+
+# Component dependencies
+backoff==1.11.1
