@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
+from typing import Optional
 
 
 class MachineState(Enum):
@@ -79,7 +80,7 @@ class MachineStatus:
     spin_speed: int
     remaining_minutes: int
     remote_control: bool
-    fill_percent: int  # 0...100
+    fill_percent: Optional[int]  # 0...100
 
     @classmethod
     def from_json(cls, json):
@@ -91,5 +92,5 @@ class MachineStatus:
             spin_speed=int(json["SpinSp"]) * 100,
             remaining_minutes=round(int(json["RemTime"]) / 60),
             remote_control=json["WiFiStatus"] == "1",
-            fill_percent=int(json["FillR"])
+            fill_percent=int(json["FillR"]) if "FillR" in json else None
         )

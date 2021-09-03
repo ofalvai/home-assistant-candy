@@ -4,8 +4,8 @@ import pytest
 from aresponses import ResponsesMockServer
 
 from .common import TEST_IP, TEST_ENCRYPTION_KEY, status_response
-from candy.client import CandyClient
-from candy.client.model import MachineState, ProgramState
+from custom_components.candy.client import CandyClient
+from custom_components.candy.client.model import MachineState, ProgramState
 
 
 @pytest.mark.asyncio
@@ -45,3 +45,20 @@ async def test_delayed_start_wait(aresponses: ResponsesMockServer):
         assert status.machine_state is MachineState.DELAYED_START_PROGRAMMED
         assert status.program_state is ProgramState.STOPPED
         assert status.remaining_minutes == 50
+
+
+@pytest.mark.asyncio
+async def test_no_fillr_property(aresponses: ResponsesMockServer):
+    """Test parsing the status when response doesn't contain the FillR property"""
+    aresponses.add(
+        TEST_IP,
+        "/http-read.json",
+        response=status_response("no_fillr.json")
+    )
+
+    async with aiohttp.ClientSession() as session:
+        client = CandyClient(session, device_ip=TEST_IP, encryption_key=TEST_ENCRYPTION_KEY, use_encryption=False)
+        status = await client.status()
+
+        assert status.machine_state is MachineState.IDLE
+        assert status.fill_percent is None

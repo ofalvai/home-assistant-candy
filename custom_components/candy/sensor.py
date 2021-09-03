@@ -44,14 +44,19 @@ class CandyWashingMachineSensor(CoordinatorEntity, SensorEntity):
     @property
     def extra_state_attributes(self) -> Mapping[str, Any]:
         status: MachineStatus = self.coordinator.data
-        return {
+
+        attributes = {
             "program": status.program,
             "temperature": status.temp,
             "spin_speed": status.spin_speed,
             "remaining_minutes": status.remaining_minutes,
             "remote_control": status.remote_control,
-            "fill_percent": status.fill_percent
         }
+
+        if status.fill_percent is not None:
+            attributes["fill_percent"] = status.fill_percent
+
+        return attributes
 
 
 # TODO: unique ID
