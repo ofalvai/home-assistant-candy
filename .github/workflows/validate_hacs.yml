@@ -1,7 +1,6 @@
-name: Validate
+name: Validate HACS
 
 on:
-  push:
   pull_request:
 
 jobs:
