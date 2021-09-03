@@ -1,4 +1,4 @@
-from typing import Optional, Mapping, Any
+from typing import Mapping, Any
 
 from homeassistant.helpers.typing import StateType
 from .client import MachineStatus
@@ -8,29 +8,47 @@ from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import TIME_MINUTES
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.helpers.update_coordinator import CoordinatorEntity, DataUpdateCoordinator
+from homeassistant.helpers.entity import DeviceInfo
 
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, async_add_entities):
     """Set up the Candy sensors from config entry."""
 
-    coordinator = hass.data[DOMAIN][config_entry.entry_id][DATA_KEY_COORDINATOR]
+    config_id = config_entry.entry_id
+    coordinator = hass.data[DOMAIN][config_id][DATA_KEY_COORDINATOR]
 
     async_add_entities([
-        CandyWashingMachineSensor(coordinator),
-        CandyCycleStatusSensor(coordinator),
-        CandyRemainingTimeSensor(coordinator)
+        CandyWashingMachineSensor(coordinator, config_id),
+        CandyWashCycleStatusSensor(coordinator, config_id),
+        CandyWashRemainingTimeSensor(coordinator, config_id)
     ])
 
 
-# TODO: unique ID
-class CandyWashingMachineSensor(CoordinatorEntity, SensorEntity):
-    def __init__(self, coordinator):
+class CandyBaseSensor(CoordinatorEntity, SensorEntity):
+    def __init__(self, coordinator: DataUpdateCoordinator, config_id: str):
         super().__init__(coordinator)
+        self.config_id = config_id
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.config_id)},
+            name="Washing machine",
+            manufacturer="Candy",
+            suggested_area="Bathroom",
+        )
+
+
+class CandyWashingMachineSensor(CandyBaseSensor):
 
     @property
     def name(self) -> str:
         return "Washing machine"
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_WASHING_MACHINE.format(self.config_id)
 
     @property
     def state(self) -> StateType:
@@ -59,14 +77,15 @@ class CandyWashingMachineSensor(CoordinatorEntity, SensorEntity):
         return attributes
 
 
-# TODO: unique ID
-class CandyCycleStatusSensor(CoordinatorEntity, SensorEntity):
-    def __init__(self, coordinator):
-        super().__init__(coordinator)
+class CandyWashCycleStatusSensor(CandyBaseSensor):
 
     @property
     def name(self) -> str:
         return "Wash cycle status"
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_WASH_CYCLE_STATUS.format(self.config_id)
 
     @property
     def state(self) -> StateType:
@@ -78,14 +97,15 @@ class CandyCycleStatusSensor(CoordinatorEntity, SensorEntity):
         return "mdi:washing-machine"
 
 
-# TODO: unique ID
-class CandyRemainingTimeSensor(CoordinatorEntity, SensorEntity):
-    def __init__(self, coordinator):
-        super().__init__(coordinator)
+class CandyWashRemainingTimeSensor(CandyBaseSensor):
 
     @property
     def name(self) -> str:
         return "Wash cycle remaining time"
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_WASH_REMAINING_TIME.format(self.config_id)
 
     @property
     def state(self) -> StateType:
