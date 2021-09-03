@@ -18,4 +18,10 @@ jobs:
           .venv/bin/pip install -r requirements_test.txt
       - name: Test with pytest
         run: |
-          .venv/bin/python -m pytest
+          .venv/bin/python -m pytest \
+            --cov-report term-missing \
+            --cov-report xml \
+            --cov=custom_components.candy
+      - uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
