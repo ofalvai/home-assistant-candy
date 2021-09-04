@@ -5,7 +5,7 @@ from aresponses import ResponsesMockServer
 
 from .common import TEST_IP, TEST_ENCRYPTION_KEY, status_response
 from custom_components.candy.client import CandyClient
-from custom_components.candy.client.model import MachineState, ProgramState
+from custom_components.candy.client.model import MachineState, WashProgramState, WashingMachineStatus
 
 
 @pytest.mark.asyncio
@@ -14,15 +14,16 @@ async def test_idle(aresponses: ResponsesMockServer):
     aresponses.add(
         TEST_IP,
         "/http-read.json",
-        response=status_response("idle.json")
+        response=status_response("washing_machine/idle.json")
     )
 
     async with aiohttp.ClientSession() as session:
         client = CandyClient(session, device_ip=TEST_IP, encryption_key=TEST_ENCRYPTION_KEY, use_encryption=False)
         status = await client.status()
 
+        assert type(status) is WashingMachineStatus
         assert status.machine_state is MachineState.IDLE
-        assert status.program_state is ProgramState.STOPPED
+        assert status.program_state is WashProgramState.STOPPED
         assert status.spin_speed == 800
         assert status.temp == 40
 
@@ -35,15 +36,16 @@ async def test_delayed_start_wait(aresponses: ResponsesMockServer):
     aresponses.add(
         TEST_IP,
         "/http-read.json",
-        response=status_response("delayed_start_wait.json")
+        response=status_response("washing_machine/delayed_start_wait.json")
     )
 
     async with aiohttp.ClientSession() as session:
         client = CandyClient(session, device_ip=TEST_IP, encryption_key=TEST_ENCRYPTION_KEY, use_encryption=False)
         status = await client.status()
 
+        assert type(status) is WashingMachineStatus
         assert status.machine_state is MachineState.DELAYED_START_PROGRAMMED
-        assert status.program_state is ProgramState.STOPPED
+        assert status.program_state is WashProgramState.STOPPED
         assert status.remaining_minutes == 50
 
 
@@ -53,12 +55,14 @@ async def test_no_fillr_property(aresponses: ResponsesMockServer):
     aresponses.add(
         TEST_IP,
         "/http-read.json",
-        response=status_response("no_fillr.json")
+        response=status_response("washing_machine/no_fillr.json")
     )
 
     async with aiohttp.ClientSession() as session:
         client = CandyClient(session, device_ip=TEST_IP, encryption_key=TEST_ENCRYPTION_KEY, use_encryption=False)
         status = await client.status()
 
+        assert type(status) is WashingMachineStatus
         assert status.machine_state is MachineState.IDLE
         assert status.fill_percent is None
+

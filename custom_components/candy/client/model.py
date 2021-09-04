@@ -31,7 +31,7 @@ class MachineState(Enum):
             return "%s" % self
 
 
-class ProgramState(Enum):
+class WashProgramState(Enum):
     STOPPED = 0
     PRE_WASH = 1
     WASH = 2
@@ -45,36 +45,48 @@ class ProgramState(Enum):
     SPIN = 10
 
     def __str__(self):
-        if self == ProgramState.STOPPED:
+        if self == WashProgramState.STOPPED:
             return "Stopped"
-        elif self == ProgramState.PRE_WASH:
+        elif self == WashProgramState.PRE_WASH:
             return "Pre-wash"
-        elif self == ProgramState.WASH:
+        elif self == WashProgramState.WASH:
             return "Wash"
-        elif self == ProgramState.RINSE:
+        elif self == WashProgramState.RINSE:
             return "Rinse"
-        elif self == ProgramState.LAST_RINSE:
+        elif self == WashProgramState.LAST_RINSE:
             return "Last rinse"
-        elif self == ProgramState.END:
+        elif self == WashProgramState.END:
             return "End"
-        elif self == ProgramState.DRYING:
+        elif self == WashProgramState.DRYING:
             return "Drying"
-        elif self == ProgramState.ERROR:
+        elif self == WashProgramState.ERROR:
             return "Error"
-        elif self == ProgramState.STEAM:
+        elif self == WashProgramState.STEAM:
             return "Steam"
-        elif self == ProgramState.GOOD_NIGHT:
+        elif self == WashProgramState.GOOD_NIGHT:
             return "Spin - Good Night"
-        elif self == ProgramState.SPIN:
+        elif self == WashProgramState.SPIN:
             return "Spin"
         else:
             return "%s" % self
 
 
+class DryProgramState(Enum):
+    STOPPED = 0
+
+    # TODO: values
+
+    def __str__(self):
+        if self == DryProgramState.STOPPED:
+            return "Stopped"
+        else:
+            return "%s" % self
+
+
 @dataclass
-class MachineStatus:
+class WashingMachineStatus:
     machine_state: MachineState
-    program_state: ProgramState
+    program_state: WashProgramState
     program: int
     temp: int
     spin_speed: int
@@ -86,11 +98,30 @@ class MachineStatus:
     def from_json(cls, json):
         return cls(
             machine_state=MachineState(int(json["MachMd"])),
-            program_state=ProgramState(int(json["PrPh"])),
+            program_state=WashProgramState(int(json["PrPh"])),
             program=int(json["Pr"]),
             temp=int(json["Temp"]),
             spin_speed=int(json["SpinSp"]) * 100,
             remaining_minutes=round(int(json["RemTime"]) / 60),
             remote_control=json["WiFiStatus"] == "1",
             fill_percent=int(json["FillR"]) if "FillR" in json else None
+        )
+
+
+@dataclass
+class TumbleDryerStatus:
+    machine_state: MachineState
+    program_state: DryProgramState
+    program: int
+    remaining_minutes: int
+    remote_control: bool
+
+    @classmethod
+    def from_json(cls, json):
+        return cls(
+            machine_state=MachineState(int(json["StatoTD"])),  # TODO?
+            program_state=DryProgramState(int(json["PrPh"])),
+            program=int(json["Pr"]),
+            remaining_minutes=int(json["RemTime"]),  # TODO: minutes or seconds?
+            remote_control=json["StatoWiFi"] == "1",
         )
