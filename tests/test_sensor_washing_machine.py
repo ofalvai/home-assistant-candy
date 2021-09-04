@@ -1,33 +1,14 @@
 """Tests for various sensors"""
 from pytest_homeassistant_custom_component.common import MockConfigEntry, load_fixture
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
-from homeassistant.const import CONF_IP_ADDRESS, CONF_PASSWORD
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import entity_registry, device_registry
 
-from custom_components.candy import DOMAIN, CONF_KEY_USE_ENCRYPTION
-from tests.common import TEST_IP
-
-
-async def init_integration(hass: HomeAssistant, aioclient_mock, status_response: str):
-    entry = MockConfigEntry(
-        domain=DOMAIN,
-        unique_id="123-456",
-        data={
-            CONF_IP_ADDRESS: "192.168.0.66",
-            CONF_KEY_USE_ENCRYPTION: False,
-            CONF_PASSWORD: "asdasdasd",
-        }
-    )
-
-    aioclient_mock.get(f"http://{TEST_IP}/http-read.json?encrypted=0", text=status_response)
-
-    entry.add_to_hass(hass)
-    await hass.config_entries.async_setup(entry.entry_id)
-    await hass.async_block_till_done()
+from .common import init_integration
 
 
 async def test_main_sensor_idle(hass: HomeAssistant, aioclient_mock: AiohttpClientMocker):
-    await init_integration(hass, aioclient_mock, load_fixture("idle.json"))
+    await init_integration(hass, aioclient_mock, load_fixture("washing_machine/idle.json"))
 
     state = hass.states.get("sensor.washing_machine")
 
@@ -46,7 +27,7 @@ async def test_main_sensor_idle(hass: HomeAssistant, aioclient_mock: AiohttpClie
 
 
 async def test_cycle_sensor_idle(hass: HomeAssistant, aioclient_mock: AiohttpClientMocker):
-    await init_integration(hass, aioclient_mock, load_fixture("idle.json"))
+    await init_integration(hass, aioclient_mock, load_fixture("washing_machine/idle.json"))
 
     state = hass.states.get("sensor.wash_cycle_status")
 
@@ -59,7 +40,7 @@ async def test_cycle_sensor_idle(hass: HomeAssistant, aioclient_mock: AiohttpCli
 
 
 async def test_remaining_time_sensor_wash(hass: HomeAssistant, aioclient_mock: AiohttpClientMocker):
-    await init_integration(hass, aioclient_mock, load_fixture("running_wash.json"))
+    await init_integration(hass, aioclient_mock, load_fixture("washing_machine/running_wash.json"))
 
     state = hass.states.get("sensor.wash_cycle_remaining_time")
 
@@ -73,7 +54,7 @@ async def test_remaining_time_sensor_wash(hass: HomeAssistant, aioclient_mock: A
 
 
 async def test_main_sensor_no_fillr(hass: HomeAssistant, aioclient_mock: AiohttpClientMocker):
-    await init_integration(hass, aioclient_mock, load_fixture("no_fillr.json"))
+    await init_integration(hass, aioclient_mock, load_fixture("washing_machine/no_fillr.json"))
 
     state = hass.states.get("sensor.washing_machine")
 
@@ -88,3 +69,37 @@ async def test_main_sensor_no_fillr(hass: HomeAssistant, aioclient_mock: Aiohttp
         'friendly_name': 'Washing machine',
         'icon': 'mdi:washing-machine'
     }
+
+
+async def test_main_sensor_device_info(hass: HomeAssistant, aioclient_mock: AiohttpClientMocker):
+    await init_integration(hass, aioclient_mock, load_fixture("washing_machine/idle.json"))
+
+    er = entity_registry.async_get(hass)
+    dr = device_registry.async_get(hass)
+    entry = er.async_get("sensor.washing_machine")
+    device = dr.async_get(entry.device_id)
+
+    assert device
+    assert device.manufacturer == "Candy"
+    assert device.name == "Washing machine"
+    assert device.suggested_area == "Bathroom"
+
+
+async def test_sensors_device_info(hass: HomeAssistant, aioclient_mock: AiohttpClientMocker):
+    await init_integration(hass, aioclient_mock, load_fixture("washing_machine/idle.json"))
+
+    er = entity_registry.async_get(hass)
+    dr = device_registry.async_get(hass)
+
+    main_sensor = er.async_get("sensor.washing_machine")
+    cycle_sensor = er.async_get("sensor.wash_cycle_status")
+    time_sensor = er.async_get("sensor.wash_cycle_remaining_time")
+
+    main_device = dr.async_get(main_sensor.device_id)
+    cycle_device = dr.async_get(cycle_sensor.device_id)
+    time_device = dr.async_get(time_sensor.device_id)
+
+    assert main_device
+    assert cycle_device
+    assert time_device
+    assert main_device == cycle_device == time_device
