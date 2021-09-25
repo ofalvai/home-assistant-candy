@@ -71,13 +71,13 @@ class WashProgramState(Enum):
             return "%s" % self
 
 
-class DryProgramState(Enum):
+class DryerProgramState(Enum):
     STOPPED = 0
 
     # TODO: values
 
     def __str__(self):
-        if self == DryProgramState.STOPPED:
+        if self == DryerProgramState.STOPPED:
             return "Stopped"
         else:
             return "%s" % self
@@ -111,7 +111,7 @@ class WashingMachineStatus:
 @dataclass
 class TumbleDryerStatus:
     machine_state: MachineState
-    program_state: DryProgramState
+    program_state: DryerProgramState
     program: int
     remaining_minutes: int
     remote_control: bool
@@ -120,8 +120,48 @@ class TumbleDryerStatus:
     def from_json(cls, json):
         return cls(
             machine_state=MachineState(int(json["StatoTD"])),  # TODO?
-            program_state=DryProgramState(int(json["PrPh"])),
+            program_state=DryerProgramState(int(json["PrPh"])),
             program=int(json["Pr"]),
             remaining_minutes=int(json["RemTime"]),  # TODO: minutes or seconds?
             remote_control=json["StatoWiFi"] == "1",
         )
+
+
+class OvenState(Enum):
+    IDLE = 0
+    HEATING = 1
+
+    def __str__(self):
+        if self == OvenState.IDLE:
+            return "Idle"
+        elif self == OvenState.HEATING:
+            return "Heating"
+        else:
+            return "%s" % self
+
+
+@dataclass
+class OvenStatus:
+    machine_state: OvenState
+    program: int
+    selection: int
+    temp: float
+    temp_reached: bool
+    program_length_minutes: int
+    remote_control: bool
+
+    @classmethod
+    def from_json(cls, json):
+        return cls(
+            machine_state=OvenState(int(json["StartStop"])),
+            program=int(json["Program"]),
+            selection=int(json["Selettore"]),
+            temp=round(fahrenheit_to_celsius(int(json["TempRead"]))),
+            temp_reached=json["TempSetRaggiunta"] == "1",
+            program_length_minutes=int(json["TimeProgr"]),
+            remote_control=json["StatoWiFi"] == "1",
+        )
+
+
+def fahrenheit_to_celsius(fahrenheit: float) -> float:
+    return (fahrenheit - 32) * 5.0 / 9.0

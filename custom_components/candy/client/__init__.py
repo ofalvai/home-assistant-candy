@@ -7,7 +7,7 @@ import aiohttp
 import backoff
 from aiohttp import ClientSession
 
-from .model import WashingMachineStatus, TumbleDryerStatus
+from .model import WashingMachineStatus, TumbleDryerStatus, OvenStatus
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,6 +42,8 @@ class CandyClient:
                 status = TumbleDryerStatus.from_json(resp_json["statusTD"])
             elif "statusLavatrice" in resp_json:
                 status = WashingMachineStatus.from_json(resp_json["statusLavatrice"])
+            elif "statusForno" in resp_json:
+                status = OvenStatus.from_json(resp_json["statusForno"])
             else:
                 raise Exception("Unable to detect machine type from API response", resp_json)
 
