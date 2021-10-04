@@ -1,0 +1,24 @@
+{
+  "statusForno": {
+    "StatoWiFi": "0",
+    "CodiceErrore": "E0",
+    "RecipeId": "NULL",
+    "RecipeStep": "0",
+    "StartStop": "0",
+    "Pausa": "0",
+    "SicurezzaBambini": "0",
+    "Selettore": "1",
+    "Program": "2",
+    "TempSet": "0",
+    "TempRead": "310",
+    "TempSetRaggiunta": "0",
+    "DelayStart": "0",
+    "RemainingTimeProgr": "65535",
+    "ora": "9",
+    "min": "2",
+    "sec": "5",
+    "TimeProgr": "0",
+    "FWver": "004B",
+    "ts": "0"
+  }
+}

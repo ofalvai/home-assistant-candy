@@ -1,14 +1,15 @@
 # Candy Home Assistant component
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
+[![codecov](https://codecov.io/gh/ofalvai/home-assistant-candy/branch/main/graph/badge.svg?token=HE0AIQOGAD)](https://codecov.io/gh/ofalvai/home-assistant-candy)
 
 Custom component for [Home Assistant](https://homeassistant.io) that integrates Candy/Haier Wi-Fi washing machines (also known as Simply-Fi).
 
-This is still work-in-progress, it only supports washing machines and may not work with all models. Open a PR or issue if you have a model that's not supported.
+This is still work-in-progress, it may not support every appliance type or feature. Open a PR or issue if you have a model that's not supported.
 
 
 ## Features
-
+- Supported appliances: washing machine, tumble dryer, oven
 - Uses the local API and its status endpoint
 - Displays the machine status, wash cycle status, remaining time and some other attributes
 

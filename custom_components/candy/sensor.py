@@ -3,11 +3,11 @@ from typing import Mapping, Any
 
 from homeassistant.helpers.typing import StateType
 from .client import WashingMachineStatus
-from .client.model import MachineState, TumbleDryerStatus
+from .client.model import MachineState, TumbleDryerStatus, OvenStatus
 from .const import *
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import TIME_MINUTES
+from homeassistant.const import TIME_MINUTES, TEMP_CELSIUS
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import CoordinatorEntity, DataUpdateCoordinator
 from homeassistant.helpers.entity import DeviceInfo
@@ -29,6 +29,11 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
         async_add_entities([
             CandyTumbleDryerSensor(coordinator, config_id)
         ])
+    elif type(coordinator.data) is OvenStatus:
+        async_add_entities([
+            CandyOvenSensor(coordinator, config_id),
+            CandyOvenTempSensor(coordinator, config_id)
+        ])
     else:
         raise Exception(f"Unable to determine machine type: {coordinator.data}")
 
@@ -44,11 +49,15 @@ class CandyBaseSensor(CoordinatorEntity, SensorEntity):
             identifiers={(DOMAIN, self.config_id)},
             name=self.device_name(),
             manufacturer="Candy",
-            suggested_area="Bathroom",
+            suggested_area=self.suggested_area(),
         )
 
     @abstractmethod
     def device_name(self) -> str:
+        pass
+
+    @abstractmethod
+    def suggested_area(self) -> str:
         pass
 
 
@@ -56,6 +65,9 @@ class CandyWashingMachineSensor(CandyBaseSensor):
 
     def device_name(self) -> str:
         return DEVICE_NAME_WASHING_MACHINE
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_BATHROOM
 
     @property
     def name(self) -> str:
@@ -97,6 +109,9 @@ class CandyWashCycleStatusSensor(CandyBaseSensor):
     def device_name(self) -> str:
         return DEVICE_NAME_WASHING_MACHINE
 
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_BATHROOM
+
     @property
     def name(self) -> str:
         return "Wash cycle status"
@@ -119,6 +134,9 @@ class CandyWashRemainingTimeSensor(CandyBaseSensor):
 
     def device_name(self) -> str:
         return DEVICE_NAME_WASHING_MACHINE
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_BATHROOM
 
     @property
     def name(self) -> str:
@@ -149,6 +167,9 @@ class CandyTumbleDryerSensor(CandyBaseSensor):
 
     def device_name(self) -> str:
         return DEVICE_NAME_TUMBLE_DRYER
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_BATHROOM
 
     @property
     def name(self) -> str:
@@ -183,3 +204,74 @@ class CandyTumbleDryerSensor(CandyBaseSensor):
         }
 
         return attributes
+
+
+class CandyOvenSensor(CandyBaseSensor):
+
+    def device_name(self) -> str:
+        return DEVICE_NAME_OVEN
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return self.device_name()
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_OVEN.format(self.config_id)
+
+    @property
+    def state(self) -> StateType:
+        status: OvenStatus = self.coordinator.data
+        return str(status.machine_state)
+
+    @property
+    def icon(self) -> str:
+        return "mdi:stove"
+
+    @property
+    def extra_state_attributes(self) -> Mapping[str, Any]:
+        status: OvenStatus = self.coordinator.data
+
+        attributes = {
+            "program": status.program,
+            "selection": status.selection,
+            "temperature": status.temp,
+            "temperature_reached": status.temp_reached,
+            "program_length_minutes": status.program_length_minutes,
+            "remote_control": status.remote_control,
+        }
+
+        return attributes
+
+
+class CandyOvenTempSensor(CandyBaseSensor):
+
+    def device_name(self) -> str:
+        return DEVICE_NAME_OVEN
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return "Oven temperature"
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_OVEN_TEMP.format(self.config_id)
+
+    @property
+    def state(self) -> StateType:
+        status: OvenStatus = self.coordinator.data
+        return status.temp
+
+    @property
+    def unit_of_measurement(self) -> str:
+        return TEMP_CELSIUS
+
+    @property
+    def icon(self) -> str:
+        return "mdi:thermometer"
