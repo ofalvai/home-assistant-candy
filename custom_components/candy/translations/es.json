@@ -1,0 +1,20 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "El dispositivo ya esta configurado"
+        },
+        "error": {
+            "unknown": "Error inesperado"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "ip_address": "Dirección IP Dispositivo",
+                    "password": "Clave Encriptación",
+                    "use_encryption": "Utilice la clave de encriptación"
+                }
+            }
+        }
+    },
+    "title": "Candy"
+}
