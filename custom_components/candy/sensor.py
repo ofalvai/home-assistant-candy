@@ -173,8 +173,13 @@ class CandyTumbleDryerSensor(CandyBaseSensor):
 
         attributes = {
             "program": status.program,
+            "machine_state": str(status.machine_state),
+            "program_state": str(status.program_state),
+            "dry_level_state": str(status.dry_level_state),
             "remaining_minutes": status.remaining_minutes,
             "remote_control": status.remote_control,
+            "water_tank_full": status.water_tank_full,
+            "clean_filter": status.clean_filter
         }
 
         return attributes

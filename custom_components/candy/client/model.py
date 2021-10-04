@@ -73,12 +73,40 @@ class WashProgramState(Enum):
 
 class DryProgramState(Enum):
     STOPPED = 0
+    DRYING = 2
+    HANG_LEVEL = 3
+    IRON_LEVEL = 4
 
     # TODO: values
 
     def __str__(self):
         if self == DryProgramState.STOPPED:
             return "Stopped"
+        if self == DryProgramState.DRYING:
+            return "Drying"
+        if self == DryProgramState.HANG_LEVEL:
+            return "Hang Level Reached"
+        if self == DryProgramState.IRON_LEVEL:
+            return "Iron Level Reached"
+        else:
+            return "%s" % self
+
+class DryLevelState(Enum):
+    WET = 1 # TODO
+    HANG = 2
+    IRON = 3
+    CLOSET = 4
+
+
+    def __str__(self):
+        if self == DryLevelState.XXX:
+            return "Wet"
+        if self == DryLevelState.HANG:
+            return "Ready to Hang"
+        if self == DryLevelState.IRON:
+            return "Ready to Iron"
+        if self == DryLevelState.CLOSET:
+            return "Ready for Closet"
         else:
             return "%s" % self
 
@@ -112,16 +140,22 @@ class WashingMachineStatus:
 class TumbleDryerStatus:
     machine_state: MachineState
     program_state: DryProgramState
+    dry_level_state: DryLevelState
     program: int
     remaining_minutes: int
     remote_control: bool
+    water_tank_full: bool
+    clean_filter: bool
 
     @classmethod
     def from_json(cls, json):
         return cls(
-            machine_state=MachineState(int(json["StatoTD"])),  # TODO?
+            machine_state=MachineState(int(json["StatoTD"])),  # TODO? 
             program_state=DryProgramState(int(json["PrPh"])),
+            dry_level_state=DryLevelState(int(json["DryLev"])),
             program=int(json["Pr"]),
-            remaining_minutes=int(json["RemTime"]),  # TODO: minutes or seconds?
+            remaining_minutes=int(json["RemTime"]),  # Its in minutes
             remote_control=json["StatoWiFi"] == "1",
+            water_tank_full=json["WaterTankFull"] != "0",
+            clean_filter=json["CleanFilter"] != "0",
         )
