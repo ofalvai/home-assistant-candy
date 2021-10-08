@@ -30,7 +30,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
 
     async def update_status():
         try:
-            async with async_timeout.timeout(20):
+            async with async_timeout.timeout(40):
                 status = await client.status_with_retry()
                 _LOGGER.debug("Fetched status: %s", status)
                 return status
