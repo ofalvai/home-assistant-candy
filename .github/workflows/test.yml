@@ -8,15 +8,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
-        # The actions/cache step below uses this id to get the exact python version
-        id: setup-python
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
       - uses: actions/cache@v2
         with:
-          path: ~/.local/share/virtualenvs
-          key: ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-pipenv-${{ hashFiles('Pipfile.lock') }}
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
