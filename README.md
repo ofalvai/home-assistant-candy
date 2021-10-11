@@ -17,10 +17,9 @@ This is still work-in-progress, it may not support every appliance type or featu
 ## Installation
 
 1. Install [HACS](https://hacs.xyz/)
-2. Add this as a custom repository to HACS (`https://github.com/ofalvai/home-assistant-candy`)
-3. Go to the integrations list in HACS and install this custom repo
+2. Go to the integrations list in HACS and install this custom repo
 4. Restart Home Assistant
-5. Go to the Integrations page, click Add integrations and select Candy
+5. Go to the Integrations page, click Add integrations and select `Candy`
 6. Complete the config flow
 
 ## Configuration
