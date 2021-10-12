@@ -27,7 +27,9 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
         ])
     elif type(coordinator.data) is TumbleDryerStatus:
         async_add_entities([
-            CandyTumbleDryerSensor(coordinator, config_id)
+            CandyTumbleDryerSensor(coordinator, config_id),
+            CandyTumbleStatusSensor(coordinator, config_id),
+            CandyTumbleRemainingTimeSensor(coordinator, config_id)
         ])
     elif type(coordinator.data) is OvenStatus:
         async_add_entities([
@@ -196,9 +198,74 @@ class CandyTumbleDryerSensor(CandyBaseSensor):
             "program": status.program,
             "remaining_minutes": status.remaining_minutes,
             "remote_control": status.remote_control,
+            "dry_level": status.dry_level,
+            "dry_level_now": status.drylevel_selected,
+            "refresh": status.refresh,
+            "clean_filter": status.clean_filter,
+            "watertank_full": status.water_tank,
+            "door_close": status.door_state,
         }
 
         return attributes
+
+
+class CandyTumbleStatusSensor(CandyBaseSensor):
+
+    def device_name(self) -> str:
+        return DEVICE_NAME_TUMBLE_DRYER
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_BATHROOM
+
+    @property
+    def name(self) -> str:
+        return "Dryer cycle status"
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_TUMBLE_CYCLE_STATUS.format(self.config_id)
+
+    @property
+    def state(self) -> StateType:
+        status: TumbleDryerStatus = self.coordinator.data
+        return str(status.program_state)
+
+    @property
+    def icon(self) -> str:
+        return "mdi:tumble-dryer"
+
+
+class CandyTumbleRemainingTimeSensor(CandyBaseSensor):
+
+    def device_name(self) -> str:
+        return DEVICE_NAME_TUMBLE_DRYER
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_BATHROOM
+
+    @property
+    def name(self) -> str:
+        return "Dryer cycle remaining time"
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_TUMBLE_REMAINING_TIME.format(self.config_id)
+
+    @property
+    def state(self) -> StateType:
+        status: TumbleDryerStatus = self.coordinator.data
+        if status.machine_state in [MachineState.RUNNING, MachineState.PAUSED]:
+            return status.remaining_minutes
+        else:
+            return 0
+
+    @property
+    def unit_of_measurement(self) -> str:
+        return TIME_MINUTES
+
+    @property
+    def icon(self) -> str:
+        return "mdi:progress-clock"
 
 
 class CandyOvenSensor(CandyBaseSensor):

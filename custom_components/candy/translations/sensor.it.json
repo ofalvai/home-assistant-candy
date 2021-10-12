@@ -1,0 +1,24 @@
+{
+  "state": {
+    "_": {
+      "Idle": "Inattiva",
+      "Running": "In corso",
+      "Paused": "In pausa",
+      "Delayed start selection": "Partenza ritardata scelta",
+      "Delayed start programmed": "Partenza ritardata programmata",
+      "Error": "Errore",
+      "Finished": "Completato",
+      "Stopped": "Fermato",
+      "Pre-wash": "Pre-lavaggio",
+      "Wash": "In lavaggio",
+      "Rinse": "Sto risciacquando",
+      "Last rinse": "Ultimo risciacquo",
+      "End": "Finito",
+      "Drying": "Asciugo",
+      "Steam": "In vapore",
+      "Spin - Good Night": "In centrifuga - Modalità Notte",
+      "Spin": "In centrifuga",
+      "Heating": "Sto riscaldando"
+    }
+  }
+}
