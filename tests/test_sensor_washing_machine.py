@@ -18,7 +18,7 @@ async def test_main_sensor_idle(hass: HomeAssistant, aioclient_mock: AiohttpClie
         'program': 1,
         'temperature': 40,
         'spin_speed': 800,
-        'remaining_minutes': 39,
+        'remaining_minutes': 0,
         'remote_control': True,
         'fill_percent': 0,
         'friendly_name': 'Washing machine',
@@ -53,6 +53,20 @@ async def test_remaining_time_sensor_wash(hass: HomeAssistant, aioclient_mock: A
     }
 
 
+async def test_remaining_time_sensor_idle(hass: HomeAssistant, aioclient_mock: AiohttpClientMocker):
+    await init_integration(hass, aioclient_mock, load_fixture("washing_machine/idle.json"))
+
+    state = hass.states.get("sensor.wash_cycle_remaining_time")
+
+    assert state
+    assert state.state == "0"
+    assert state.attributes == {
+        "friendly_name": "Wash cycle remaining time",
+        "icon": "mdi:progress-clock",
+        "unit_of_measurement": "min",
+    }
+
+
 async def test_main_sensor_no_fillr(hass: HomeAssistant, aioclient_mock: AiohttpClientMocker):
     await init_integration(hass, aioclient_mock, load_fixture("washing_machine/no_fillr.json"))
 
@@ -64,7 +78,7 @@ async def test_main_sensor_no_fillr(hass: HomeAssistant, aioclient_mock: Aiohttp
         'program': 4,
         'temperature': 40,
         'spin_speed': 1000,
-        'remaining_minutes': 1,
+        'remaining_minutes': 0,
         'remote_control': False,
         'friendly_name': 'Washing machine',
         'icon': 'mdi:washing-machine'
