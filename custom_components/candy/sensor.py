@@ -202,7 +202,7 @@ class CandyTumbleDryerSensor(CandyBaseSensor):
             "dry_level_now": status.drylevel_selected,
             "refresh": status.refresh,
             "need_clean_filter": status.need_clean_filter,
-            "watertank_full": status.water_tank,
+            "watertank_full": status.full_water_tank,
             "door_close": status.door_state,
         }
 

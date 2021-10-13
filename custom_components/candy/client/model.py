@@ -120,7 +120,7 @@ class TumbleDryerStatus:
     dry_level: int
     refresh: bool
     need_clean_filter: bool
-    water_tank: bool
+    full_water_tank: bool
     drylevel_selected: int
     door_state: bool
 
@@ -135,7 +135,7 @@ class TumbleDryerStatus:
             dry_level=int(json["DryLev"]),
             refresh=json["Refresh"] == "1",
             need_clean_filter=json["CleanFilter"] == "1",
-            water_tank=json["WaterTankFull"] == "1",
+            full_water_tank=json["WaterTankFull"] == "1",
             drylevel_selected=int(json["DryingManagerLevel"]),
             door_state=json["DoorState"] == "1",
 
