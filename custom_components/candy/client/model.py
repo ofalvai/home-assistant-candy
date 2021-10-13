@@ -75,7 +75,6 @@ class WashProgramState(Enum):
 class DryerProgramState(Enum):
     STOPPED = 0
     RUNNING = 2
-    # TODO: values
 
     def __str__(self):
         if self == DryerProgramState.STOPPED:
