@@ -144,6 +144,71 @@ class TumbleDryerStatus:
         )
 
 
+class DishwasherState(Enum):
+    """
+    Dishwashers have a single state combining the machine state and program state
+    """
+
+    IDLE = 0
+    PRE_WASH = 1
+    WASH = 2
+    RINSE = 3
+    DRYING = 4
+    FINISHED = 5
+
+    def __str__(self):
+        if self == DishwasherState.IDLE:
+            return "Idle"
+        elif self == DishwasherState.PRE_WASH:
+            return "Pre-wash"
+        elif self == DishwasherState.WASH:
+            return "Wash"
+        elif self == DishwasherState.RINSE:
+            return "Rinse"
+        elif self == DishwasherState.DRYING:
+            return "Drying"
+        elif self == DishwasherState.FINISHED:
+            return "Finished"
+        else:
+            return "%s" % self
+
+
+@dataclass
+class DishwasherStatus:
+    machine_state: DishwasherState
+    program: str
+    remaining_minutes: int
+    door_open: bool
+    eco_mode: bool
+    remote_control: bool
+
+    @classmethod
+    def from_json(cls, json):
+        return cls(
+            machine_state=DishwasherState(int(json["StatoDWash"])),
+            program=DishwasherStatus.parse_program(json),
+            remaining_minutes=int(json["RemTime"]),
+            door_open=json["OpenDoor"] != "0",
+            eco_mode=json["Eco"] != "0",
+            remote_control=json["StatoWiFi"] == "1"
+        )
+
+    @staticmethod
+    def parse_program(json) -> str:
+        """
+        Parse final program label, like P1, P1+, P1-
+        """
+        program = json["Program"]
+        option = json["OpzProg"]
+        if option == "p":
+            return program + "+"
+        elif option == "m":
+            return program + "-"
+        else:
+            # Third OpzProg value is 0
+            return program
+
+
 class OvenState(Enum):
     IDLE = 0
     HEATING = 1

@@ -3,7 +3,7 @@ from typing import Mapping, Any
 
 from homeassistant.helpers.typing import StateType
 from .client import WashingMachineStatus
-from .client.model import MachineState, TumbleDryerStatus, OvenStatus
+from .client.model import MachineState, TumbleDryerStatus, OvenStatus, DishwasherStatus, DishwasherState
 from .const import *
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
@@ -35,6 +35,11 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
         async_add_entities([
             CandyOvenSensor(coordinator, config_id),
             CandyOvenTempSensor(coordinator, config_id)
+        ])
+    elif type(coordinator.data) is DishwasherStatus:
+        async_add_entities([
+            CandyDishwasherSensor(coordinator, config_id),
+            CandyDishwasherRemainingTimeSensor(coordinator, config_id)
         ])
     else:
         raise Exception(f"Unable to determine machine type: {coordinator.data}")
@@ -338,3 +343,77 @@ class CandyOvenTempSensor(CandyBaseSensor):
     @property
     def icon(self) -> str:
         return "mdi:thermometer"
+
+
+class CandyDishwasherSensor(CandyBaseSensor):
+
+    def device_name(self) -> str:
+        return DEVICE_NAME_DISHWASHER
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return self.device_name()
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_DISHWASHER.format(self.config_id)
+
+    @property
+    def state(self) -> StateType:
+        status: DishwasherStatus = self.coordinator.data
+        return str(status.machine_state)
+
+    @property
+    def icon(self) -> str:
+        return "mdi:glass-wine"
+
+    @property
+    def extra_state_attributes(self) -> Mapping[str, Any]:
+        status: DishwasherStatus = self.coordinator.data
+
+        attributes = {
+            "program": status.program,
+            "remaining_minutes": 0 if status.machine_state in
+                                      [DishwasherState.IDLE, DishwasherState.FINISHED] else status.remaining_minutes,
+            "remote_control": status.remote_control,
+            "door_open": status.door_open,
+            "eco_mode": status.eco_mode,
+        }
+
+        return attributes
+
+
+class CandyDishwasherRemainingTimeSensor(CandyBaseSensor):
+
+    def device_name(self) -> str:
+        return DEVICE_NAME_DISHWASHER
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return "Dishwasher remaining time"
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_DISHWASHER_REMAINING_TIME.format(self.config_id)
+
+    @property
+    def state(self) -> StateType:
+        status: DishwasherStatus = self.coordinator.data
+        if status.machine_state in [DishwasherState.IDLE, DishwasherState.FINISHED]:
+            return 0
+        else:
+            return status.remaining_minutes
+
+    @property
+    def unit_of_measurement(self) -> str:
+        return TIME_MINUTES
+
+    @property
+    def icon(self) -> str:
+        return "mdi:progress-clock"
