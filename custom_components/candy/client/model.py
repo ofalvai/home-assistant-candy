@@ -10,7 +10,8 @@ class MachineState(Enum):
     DELAYED_START_SELECTION = 4
     DELAYED_START_PROGRAMMED = 5
     ERROR = 6
-    FINISHED = 7
+    FINISHED1 = 7
+    FINISHED2 = 8
 
     def __str__(self):
         if self == MachineState.IDLE:
@@ -25,7 +26,7 @@ class MachineState(Enum):
             return "Delayed start programmed"
         elif self == MachineState.ERROR:
             return "Error"
-        elif self == MachineState.FINISHED:
+        elif self == MachineState.FINISHED1 or self == MachineState.FINISHED2:
             return "Finished"
         else:
             return "%s" % self
@@ -73,12 +74,13 @@ class WashProgramState(Enum):
 
 class DryerProgramState(Enum):
     STOPPED = 0
-
-    # TODO: values
+    RUNNING = 2
 
     def __str__(self):
         if self == DryerProgramState.STOPPED:
             return "Stopped"
+        elif self == DryerProgramState.RUNNING:
+            return "Running"
         else:
             return "%s" % self
 
@@ -115,6 +117,12 @@ class TumbleDryerStatus:
     program: int
     remaining_minutes: int
     remote_control: bool
+    dry_level: int
+    refresh: bool
+    need_clean_filter: bool
+    full_water_tank: bool
+    drylevel_selected: int
+    door_close: bool
 
     @classmethod
     def from_json(cls, json):
@@ -122,8 +130,15 @@ class TumbleDryerStatus:
             machine_state=MachineState(int(json["StatoTD"])),  # TODO?
             program_state=DryerProgramState(int(json["PrPh"])),
             program=int(json["Pr"]),
-            remaining_minutes=int(json["RemTime"]),  # TODO: minutes or seconds?
+            remaining_minutes=int(json["RemTime"]),
             remote_control=json["StatoWiFi"] == "1",
+            dry_level=int(json["DryLev"]),
+            refresh=json["Refresh"] == "1",
+            need_clean_filter=json["CleanFilter"] == "1",
+            full_water_tank=json["WaterTankFull"] == "1",
+            drylevel_selected=int(json["DryingManagerLevel"]),
+            door_close=json["DoorState"] == "1",
+
         )
 
 
