@@ -96,7 +96,8 @@ class CandyWashingMachineSensor(CandyBaseSensor):
             "program": status.program,
             "temperature": status.temp,
             "spin_speed": status.spin_speed,
-            "remaining_minutes": status.remaining_minutes,
+            "remaining_minutes": status.remaining_minutes if status.machine_state in [MachineState.RUNNING,
+                                                                                      MachineState.PAUSED] else 0,
             "remote_control": status.remote_control,
         }
 
