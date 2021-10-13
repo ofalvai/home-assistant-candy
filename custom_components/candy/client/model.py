@@ -122,7 +122,7 @@ class TumbleDryerStatus:
     need_clean_filter: bool
     full_water_tank: bool
     drylevel_selected: int
-    door_state: bool
+    door_close: bool
 
     @classmethod
     def from_json(cls, json):
@@ -137,7 +137,7 @@ class TumbleDryerStatus:
             need_clean_filter=json["CleanFilter"] == "1",
             full_water_tank=json["WaterTankFull"] == "1",
             drylevel_selected=int(json["DryingManagerLevel"]),
-            door_state=json["DoorState"] == "1",
+            door_close=json["DoorState"] == "1",
 
         )
 

@@ -203,7 +203,7 @@ class CandyTumbleDryerSensor(CandyBaseSensor):
             "refresh": status.refresh,
             "need_clean_filter": status.need_clean_filter,
             "watertank_full": status.full_water_tank,
-            "door_close": status.door_state,
+            "door_close": status.door_close,
         }
 
         return attributes
