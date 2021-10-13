@@ -119,7 +119,7 @@ class TumbleDryerStatus:
     remote_control: bool
     dry_level: int
     refresh: bool
-    clean_filter: bool
+    need_clean_filter: bool
     water_tank: bool
     drylevel_selected: int
     door_state: bool
@@ -134,7 +134,7 @@ class TumbleDryerStatus:
             remote_control=json["StatoWiFi"] == "1",
             dry_level=int(json["DryLev"]),
             refresh=json["Refresh"] == "1",
-            clean_filter=json["CleanFilter"] == "1",
+            need_clean_filter=json["CleanFilter"] == "1",
             water_tank=json["WaterTankFull"] == "1",
             drylevel_selected=int(json["DryingManagerLevel"]),
             door_state=json["DoorState"] == "1",
