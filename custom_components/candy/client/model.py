@@ -72,22 +72,6 @@ class WashProgramState(Enum):
             return "%s" % self
 
 
-class DryerProgramState(Enum):
-    STOPPED = 0
-    RUNNING = 2
-    END = 3
-
-    def __str__(self):
-        if self == DryerProgramState.STOPPED:
-            return "Stopped"
-        elif self == DryerProgramState.RUNNING:
-            return "Running"
-        elif self == DryerProgramState.END:
-            return "End"
-        else:
-            return "%s" % self
-
-
 @dataclass
 class WashingMachineStatus:
     machine_state: MachineState
@@ -113,6 +97,22 @@ class WashingMachineStatus:
         )
 
 
+class DryerProgramState(Enum):
+    STOPPED = 0
+    RUNNING = 2
+    END = 3
+
+    def __str__(self):
+        if self == DryerProgramState.STOPPED:
+            return "Stopped"
+        elif self == DryerProgramState.RUNNING:
+            return "Running"
+        elif self == DryerProgramState.END:
+            return "End"
+        else:
+            return "%s" % self
+
+
 @dataclass
 class TumbleDryerStatus:
     machine_state: MachineState
@@ -121,27 +121,26 @@ class TumbleDryerStatus:
     remaining_minutes: int
     remote_control: bool
     dry_level: int
+    dry_level_selected: int
     refresh: bool
     need_clean_filter: bool
-    full_water_tank: bool
-    drylevel_selected: int
-    door_close: bool
+    water_tank_full: bool
+    door_closed: bool
 
     @classmethod
     def from_json(cls, json):
         return cls(
-            machine_state=MachineState(int(json["StatoTD"])),  # TODO?
+            machine_state=MachineState(int(json["StatoTD"])),
             program_state=DryerProgramState(int(json["PrPh"])),
             program=int(json["Pr"]),
             remaining_minutes=int(json["RemTime"]),
             remote_control=json["StatoWiFi"] == "1",
             dry_level=int(json["DryLev"]),
+            dry_level_selected=int(json["DryingManagerLevel"]),
             refresh=json["Refresh"] == "1",
             need_clean_filter=json["CleanFilter"] == "1",
-            full_water_tank=json["WaterTankFull"] == "1",
-            drylevel_selected=int(json["DryingManagerLevel"]),
-            door_close=json["DoorState"] == "1",
-
+            water_tank_full=json["WaterTankFull"] == "1",
+            door_closed=json["DoorState"] == "1",
         )
 
 
