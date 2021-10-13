@@ -83,7 +83,7 @@ class DryerProgramState(Enum):
         elif self == DryerProgramState.RUNNING:
             return "Running"
         elif self == DryerProgramState.END:
-            Return "End"
+            return "End"
         else:
             return "%s" % self
 
