@@ -75,12 +75,15 @@ class WashProgramState(Enum):
 class DryerProgramState(Enum):
     STOPPED = 0
     RUNNING = 2
+    END = 3
 
     def __str__(self):
         if self == DryerProgramState.STOPPED:
             return "Stopped"
         elif self == DryerProgramState.RUNNING:
             return "Running"
+        elif self == DryerProgramState.END:
+            return "End"
         else:
             return "%s" % self
 
