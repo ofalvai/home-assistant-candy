@@ -18,12 +18,6 @@ async def test_main_sensor_idle(hass: HomeAssistant, aioclient_mock: AiohttpClie
         'program': 1,
         'remaining_minutes': 150,
         'remote_control': True,
-        'dry_level': 2,
-        'dry_level_now': 1,
-        'refresh': False,
-        'need_clean_filter': False,
-        'watertank_full': False,
-        'door_close': True,
         'friendly_name': 'Tumble dryer',
         'icon': 'mdi:tumble-dryer'
     }
