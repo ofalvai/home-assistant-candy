@@ -7,7 +7,7 @@ import aiohttp
 import backoff
 from aiohttp import ClientSession
 
-from .model import WashingMachineStatus, TumbleDryerStatus, OvenStatus
+from .model import WashingMachineStatus, TumbleDryerStatus, DishwasherStatus, OvenStatus
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -20,8 +20,8 @@ class CandyClient:
         self.encryption_key = encryption_key
         self.use_encryption = use_encryption
 
-    @backoff.on_exception(backoff.expo, aiohttp.ClientError, max_tries=10)
-    @backoff.on_exception(backoff.expo, TimeoutError, max_tries=10)
+    @backoff.on_exception(backoff.expo, aiohttp.ClientError, max_tries=10, logger=__name__)
+    @backoff.on_exception(backoff.expo, TimeoutError, max_tries=10, logger=__name__)
     async def status_with_retry(self) -> Union[WashingMachineStatus, TumbleDryerStatus]:
         return await self.status()
 
@@ -44,6 +44,8 @@ class CandyClient:
                 status = WashingMachineStatus.from_json(resp_json["statusLavatrice"])
             elif "statusForno" in resp_json:
                 status = OvenStatus.from_json(resp_json["statusForno"])
+            elif "statusDWash" in resp_json:
+                status = DishwasherStatus.from_json(resp_json["statusDWash"])
             else:
                 raise Exception("Unable to detect machine type from API response", resp_json)
 

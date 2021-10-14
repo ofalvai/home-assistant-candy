@@ -1,5 +1,6 @@
 # Candy Home Assistant component
 
+[![Run tests](https://github.com/ofalvai/home-assistant-candy/actions/workflows/test.yml/badge.svg)](https://github.com/ofalvai/home-assistant-candy/actions/workflows/test.yml)
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
 [![codecov](https://codecov.io/gh/ofalvai/home-assistant-candy/branch/main/graph/badge.svg?token=HE0AIQOGAD)](https://codecov.io/gh/ofalvai/home-assistant-candy)
 
@@ -9,17 +10,20 @@ This is still work-in-progress, it may not support every appliance type or featu
 
 
 ## Features
-- Supported appliances: washing machine, tumble dryer, oven
+- Supported appliances:
+   - washing machine 
+   - tumble dryer
+   - oven
+   - dishwasher
 - Uses the local API and its status endpoint
-- Displays the machine status, wash cycle status, remaining time and some other attributes
+- Creates various sensors, such as overall state and remaining time. Everything else is exposed as sensor attributes
 
 ## Installation
 
 1. Install [HACS](https://hacs.xyz/)
-2. Add this as a custom repository to HACS (`https://github.com/ofalvai/home-assistant-candy`)
-3. Go to the integrations list in HACS and install this custom repo
+2. Go to the integrations list in HACS and install this custom repo
 4. Restart Home Assistant
-5. Go to the Integrations page, click Add integrations and select Candy
+5. Go to the Integrations page, click Add integrations and select `Candy`
 6. Complete the config flow
 
 ## Configuration

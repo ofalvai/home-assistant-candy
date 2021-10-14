@@ -10,7 +10,8 @@ class MachineState(Enum):
     DELAYED_START_SELECTION = 4
     DELAYED_START_PROGRAMMED = 5
     ERROR = 6
-    FINISHED = 7
+    FINISHED1 = 7
+    FINISHED2 = 8
 
     def __str__(self):
         if self == MachineState.IDLE:
@@ -25,7 +26,7 @@ class MachineState(Enum):
             return "Delayed start programmed"
         elif self == MachineState.ERROR:
             return "Error"
-        elif self == MachineState.FINISHED:
+        elif self == MachineState.FINISHED1 or self == MachineState.FINISHED2:
             return "Finished"
         else:
             return "%s" % self
@@ -71,44 +72,6 @@ class WashProgramState(Enum):
             return "%s" % self
 
 
-class DryerProgramState(Enum):
-    STOPPED = 0
-    DRYING = 2
-    HANG_LEVEL = 3
-    IRON_LEVEL = 4
-
-    # TODO: values
-
-    def __str__(self):
-        if self == DryerProgramState.STOPPED:
-            return "Stopped"
-        if self == DryProgramState.DRYING:
-            return "Drying"
-        if self == DryProgramState.HANG_LEVEL:
-            return "Hang Level Reached"
-        if self == DryProgramState.IRON_LEVEL:
-            return "Iron Level Reached"
-        else:
-            return "%s" % self
-
-
-class DryLevelState(Enum):
-    WET = 1  # TODO
-    HANG = 2
-    IRON = 3
-    CLOSET = 4
-
-    def __str__(self):
-        if self == DryLevelState.XXX:
-            return "Wet"
-        if self == DryLevelState.HANG:
-            return "Ready to Hang"
-        if self == DryLevelState.IRON:
-            return "Ready to Iron"
-        if self == DryLevelState.CLOSET:
-            return "Ready for Closet"
-        else:
-            return "%s" % self
 
 
 @dataclass
@@ -136,6 +99,40 @@ class WashingMachineStatus:
         )
 
 
+class DryerProgramState(Enum):
+    STOPPED = 0
+    RUNNING = 2
+    END = 3
+
+    def __str__(self):
+        if self == DryerProgramState.STOPPED:
+            return "Stopped"
+        elif self == DryerProgramState.RUNNING:
+            return "Running"
+        elif self == DryerProgramState.END:
+            return "End"
+        else:
+            return "%s" % self
+
+class DryLevelState(Enum):
+    WET = 1 
+    HANG = 2
+    IRON = 3
+    CLOSET = 4
+
+    def __str__(self):
+        if self == DryLevelState.WET:
+            return "Wet"
+        if self == DryLevelState.HANG:
+            return "Ready to Hang"
+        if self == DryLevelState.IRON:
+            return "Ready to Iron"
+        if self == DryLevelState.CLOSET:
+            return "Ready for Closet"
+        else:
+            return "%s" % self
+
+
 @dataclass
 class TumbleDryerStatus:
     machine_state: MachineState
@@ -144,8 +141,12 @@ class TumbleDryerStatus:
     program: int
     remaining_minutes: int
     remote_control: bool
+    dry_level: int
+    dry_level_selected: int
+    refresh: bool
+    need_clean_filter: bool
     water_tank_full: bool
-    clean_filter: bool
+    door_closed: bool
 
     @classmethod
     def from_json(cls, json):
@@ -155,11 +156,80 @@ class TumbleDryerStatus:
             dry_level_state=DryLevelState(int(json["DryLev"])),
             machine_state=MachineState(int(json["StatoTD"])),
             program=int(json["Pr"]),
-            remaining_minutes=int(json["RemTime"]),  # Its in minutes
+            remaining_minutes=int(json["RemTime"]),
             remote_control=json["StatoWiFi"] == "1",
-            water_tank_full=json["WaterTankFull"] != "0",
-            clean_filter=json["CleanFilter"] != "0",
+            dry_level=int(json["DryLev"]),
+            dry_level_selected=int(json["DryingManagerLevel"]),
+            refresh=json["Refresh"] == "1",
+            need_clean_filter=json["CleanFilter"] == "1",
+            water_tank_full=json["WaterTankFull"] == "1",
+            door_closed=json["DoorState"] == "1",
         )
+
+
+class DishwasherState(Enum):
+    """
+    Dishwashers have a single state combining the machine state and program state
+    """
+
+    IDLE = 0
+    PRE_WASH = 1
+    WASH = 2
+    RINSE = 3
+    DRYING = 4
+    FINISHED = 5
+
+    def __str__(self):
+        if self == DishwasherState.IDLE:
+            return "Idle"
+        elif self == DishwasherState.PRE_WASH:
+            return "Pre-wash"
+        elif self == DishwasherState.WASH:
+            return "Wash"
+        elif self == DishwasherState.RINSE:
+            return "Rinse"
+        elif self == DishwasherState.DRYING:
+            return "Drying"
+        elif self == DishwasherState.FINISHED:
+            return "Finished"
+        else:
+            return "%s" % self
+
+
+@dataclass
+class DishwasherStatus:
+    machine_state: DishwasherState
+    program: str
+    remaining_minutes: int
+    door_open: bool
+    eco_mode: bool
+    remote_control: bool
+
+    @classmethod
+    def from_json(cls, json):
+        return cls(
+            machine_state=DishwasherState(int(json["StatoDWash"])),
+            program=DishwasherStatus.parse_program(json),
+            remaining_minutes=int(json["RemTime"]),
+            door_open=json["OpenDoor"] != "0",
+            eco_mode=json["Eco"] != "0",
+            remote_control=json["StatoWiFi"] == "1"
+        )
+
+    @staticmethod
+    def parse_program(json) -> str:
+        """
+        Parse final program label, like P1, P1+, P1-
+        """
+        program = json["Program"]
+        option = json["OpzProg"]
+        if option == "p":
+            return program + "+"
+        elif option == "m":
+            return program + "-"
+        else:
+            # Third OpzProg value is 0
+            return program
 
 
 class OvenState(Enum):
