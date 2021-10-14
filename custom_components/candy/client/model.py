@@ -141,7 +141,7 @@ class TumbleDryerStatus:
     program: int
     remaining_minutes: int
     remote_control: bool
-    dry_level: int
+    #dry_level: int
     dry_level_selected: int
     refresh: bool
     need_clean_filter: bool
@@ -154,11 +154,10 @@ class TumbleDryerStatus:
             machine_state=MachineState(int(json["StatoTD"])),
             program_state=DryerProgramState(int(json["PrPh"])),
             dry_level_state=DryLevelState(int(json["DryLev"])),
-            machine_state=MachineState(int(json["StatoTD"])),
             program=int(json["Pr"]),
             remaining_minutes=int(json["RemTime"]),
             remote_control=json["StatoWiFi"] == "1",
-            dry_level=int(json["DryLev"]),
+            #dry_level=int(json["DryLev"]),
             dry_level_selected=int(json["DryingManagerLevel"]),
             refresh=json["Refresh"] == "1",
             need_clean_filter=json["CleanFilter"] == "1",
