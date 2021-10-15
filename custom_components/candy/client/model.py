@@ -199,7 +199,8 @@ class DishwasherStatus:
         Parse final program label, like P1, P1+, P1-
         """
         program = json["Program"]
-        option = json["OpzProg"]
+        # Some dishwasher don't include OpzProg in there answers 
+        option = json.get("OpzProg")
         if option == "p":
             return program + "+"
         elif option == "m":
