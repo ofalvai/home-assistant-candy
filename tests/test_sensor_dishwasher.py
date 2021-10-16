@@ -42,6 +42,22 @@ async def test_main_sensor_wash(hass: HomeAssistant, aioclient_mock: AiohttpClie
         "icon": "mdi:glass-wine"
     }
 
+async def test_main_sensor_wash_no_opzprog(hass: HomeAssistant, aioclient_mock: AiohttpClientMocker):
+    await init_integration(hass, aioclient_mock, load_fixture("dishwasher/wash-no-opzprog.json"))
+
+    state = hass.states.get("sensor.dishwasher")
+
+    assert state
+    assert state.state == "Wash"
+    assert state.attributes == {
+        "program": "P2",
+        "remaining_minutes": 68,
+        "eco_mode": True,
+        "door_open": False,
+        "remote_control": False,
+        "friendly_name": "Dishwasher",
+        "icon": "mdi:glass-wine"
+    }
 
 async def test_remaining_time_sensor_idle(hass: HomeAssistant, aioclient_mock: AiohttpClientMocker):
     await init_integration(hass, aioclient_mock, load_fixture("dishwasher/idle.json"))
