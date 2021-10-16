@@ -115,20 +115,24 @@ class DryerProgramState(Enum):
             return "%s" % self
 
 class DryLevelState(Enum):
-    WET = 1 
-    HANG = 2
-    IRON = 3
-    CLOSET = 4
+    TD_DRY_LEVEL_NONE = 0 
+    TD_DRY_LEVEL_IRON_DRY = 1 
+    TD_DRY_LEVEL_HANG_DRY = 2
+    TD_DRY_LEVEL_STORE_DRY = 3
+    TD_DRY_LEVEL_BONE_DRY = 4 
+
 
     def __str__(self):
-        if self == DryLevelState.WET:
-            return "Wet"
-        if self == DryLevelState.HANG:
-            return "Ready to Hang"
-        if self == DryLevelState.IRON:
+        if self == DryLevelState.TD_DRY_LEVEL_NONE:
+            return "None"
+        if self == DryLevelState.TD_DRY_LEVEL_IRON_DRY:
             return "Ready to Iron"
-        if self == DryLevelState.CLOSET:
-            return "Ready for Closet"
+        if self == DryLevelState.TD_DRY_LEVEL_HANG_DRY:
+            return "Dry Hanger"
+        if self == DryLevelState.TD_DRY_LEVEL_STORE_DRY:
+            return "Dry Wardrobe"
+        if self == DryLevelState.TD_DRY_LEVEL_BONE_DRY:
+            return "Extra Dry"
         else:
             return "%s" % self
 
@@ -141,8 +145,7 @@ class TumbleDryerStatus:
     program: int
     remaining_minutes: int
     remote_control: bool
-    #dry_level: int
-    dry_level_selected: int
+    dry_level: int
     refresh: bool
     need_clean_filter: bool
     water_tank_full: bool
@@ -153,12 +156,11 @@ class TumbleDryerStatus:
         return cls(
             machine_state=MachineState(int(json["StatoTD"])),
             program_state=DryerProgramState(int(json["PrPh"])),
-            dry_level_state=DryLevelState(int(json["DryLev"])),
+            dry_level_state=DryLevelState(int(json["DryingManagerLevel"])),
             program=int(json["Pr"]),
             remaining_minutes=int(json["RemTime"]),
             remote_control=json["StatoWiFi"] == "1",
-            #dry_level=int(json["DryLev"]),
-            dry_level_selected=int(json["DryingManagerLevel"]),
+            dry_level=int(json["DryLev"]),
             refresh=json["Refresh"] == "1",
             need_clean_filter=json["CleanFilter"] == "1",
             water_tank_full=json["WaterTankFull"] == "1",

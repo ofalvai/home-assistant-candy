@@ -29,7 +29,8 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
         async_add_entities([
             CandyTumbleDryerSensor(coordinator, config_id),
             CandyTumbleStatusSensor(coordinator, config_id),
-            CandyTumbleRemainingTimeSensor(coordinator, config_id)
+            CandyTumbleRemainingTimeSensor(coordinator, config_id),
+            CandyTumbleCurrentDryLevelSensor(coordinator, config_id)
         ])
     elif type(coordinator.data) is OvenStatus:
         async_add_entities([
@@ -207,8 +208,7 @@ class CandyTumbleDryerSensor(CandyBaseSensor):
             "dry_level_state": str(status.dry_level_state),
             "remaining_minutes": status.remaining_minutes,
             "remote_control": status.remote_control,
-            #"dry_level": status.dry_level,
-            "dry_level_now": status.dry_level_selected,
+            "dry_level": status.dry_level,
             "refresh": status.refresh,
             "need_clean_filter": status.need_clean_filter,
             "water_tank_full": status.water_tank_full,
@@ -238,6 +238,30 @@ class CandyTumbleStatusSensor(CandyBaseSensor):
     def state(self) -> StateType:
         status: TumbleDryerStatus = self.coordinator.data
         return str(status.program_state)
+
+    @property
+    def icon(self) -> str:
+        return "mdi:tumble-dryer"
+class CandyTumbleCurrentDryLevelSensor(CandyBaseSensor):
+
+    def device_name(self) -> str:
+        return DEVICE_NAME_TUMBLE_DRYER
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_BATHROOM
+
+    @property
+    def name(self) -> str:
+        return "Dryer current dry level"
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_TUMBLE_CURRENT_DRY_LEVEL.format(self.config_id)
+
+    @property
+    def state(self) -> StateType:
+        status: TumbleDryerStatus = self.coordinator.data
+        return str(status.dry_level_state)
 
     @property
     def icon(self) -> str:

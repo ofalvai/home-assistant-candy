@@ -13,6 +13,7 @@ UNIQUE_ID_WASH_CYCLE_STATUS = "{0}-wash_cycle_status"
 UNIQUE_ID_WASH_REMAINING_TIME = "{0}-wash_remaining_time"
 UNIQUE_ID_TUMBLE_DRYER = "{0}-tumble_dryer"
 UNIQUE_ID_TUMBLE_CYCLE_STATUS = "{0}-tumble_cycle_status"
+UNIQUE_ID_TUMBLE_CURRENT_DRY_LEVEL = "{0}-tumble_current_dry_level"
 UNIQUE_ID_TUMBLE_REMAINING_TIME = "{0}-tumble_remaining_time"
 
 UNIQUE_ID_OVEN = "{0}-oven"

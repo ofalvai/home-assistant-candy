@@ -19,11 +19,10 @@ async def test_main_sensor_idle(hass: HomeAssistant, aioclient_mock: AiohttpClie
         'program': 1,
         'machine_state': 'Idle',
         'program_state': 'Stopped',
-        'dry_level_state': 'Ready to Hang',
+        'dry_level_state': 'Ready to Iron',
         'remaining_minutes': 150,
         'remote_control': True,
-        # 'dry_level': 2,
-        'dry_level_now': 1,
+        'dry_level': 2,
         'refresh': False,
         'need_clean_filter': False,
         'water_tank_full': False,
@@ -47,8 +46,7 @@ async def test_main_sensor_running(hass: HomeAssistant, aioclient_mock: AiohttpC
         'dry_level_state': 'Ready to Hang',
         'remaining_minutes': 150,
         'remote_control': True,
-        # 'dry_level': 2,
-        'dry_level_now': 1,
+        'dry_level': 2,
         'refresh': False,
         'need_clean_filter': False,
         'water_tank_full': False,
@@ -82,6 +80,20 @@ async def test_cycle_sensor_running(hass: HomeAssistant, aioclient_mock: Aiohttp
         "friendly_name": "Dryer cycle status",
         "icon": "mdi:tumble-dryer"
     }
+
+async def test_drylevel_sensor_idle(hass: HomeAssistant, aioclient_mock: AiohttpClientMocker):
+    await init_integration(hass, aioclient_mock, load_fixture("tumble_dryer/idle.json"))
+
+    state = hass.states.get("sensor.dryer_current_dry_level")
+
+    assert state
+    assert state.state == "Ready to Iron"
+    assert state.attributes == {
+        "friendly_name": "Dryer current dry level",
+        "icon": "mdi:tumble-dryer"
+    }
+
+
 
 
 async def test_remaining_time_sensor_idle(hass: HomeAssistant, aioclient_mock: AiohttpClientMocker):
@@ -138,10 +150,10 @@ async def test_main_sensor_running(hass: HomeAssistant, aioclient_mock: AiohttpC
         'program': 1,
         'machine_state': 'Running',
         'program_state': 'Running',
-        'dry_level_state': 'Ready to Hang',
+        'dry_level_state': 'Ready to Iron',
         'remaining_minutes': 150,
         'remote_control': True,
-        'dry_level_now': 1,
+        'dry_level': 2,
         'refresh': False,
         'need_clean_filter': False,
         'water_tank_full': False,
@@ -163,10 +175,10 @@ async def test_main_sensor_hang_level(hass: HomeAssistant, aioclient_mock: Aioht
         'program': 5,
         'machine_state': 'Running',
         'program_state': 'End',
-        'dry_level_state': 'Ready to Hang',
+        'dry_level_state': 'None',
         'remaining_minutes': 122,
         'remote_control': True,
-        'dry_level_now': 0,
+        'dry_level': 2,
         'refresh': False,
         'need_clean_filter': False,
         'water_tank_full': False,
@@ -188,15 +200,16 @@ async def test_main_sensor_iron_level(hass: HomeAssistant, aioclient_mock: Aioht
         'program': 5,
         'machine_state': 'Running',
         'program_state': 'End',
-        'dry_level_state': 'Ready to Iron',
+        'dry_level_state': 'None',
         'remaining_minutes': 122,
         'remote_control': True,
-        'dry_level_now': 0,
+        'dry_level': 3,
         'refresh': False,
         'need_clean_filter': False,
         'water_tank_full': False,
         'door_closed': True,
-        'friendly_name': 'Tumble dryer',
+        'friendly_name':
+        'Tumble dryer',
         'icon': 'mdi:tumble-dryer'
     }
 
