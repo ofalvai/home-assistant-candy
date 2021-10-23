@@ -178,9 +178,13 @@ class DishwasherStatus:
     machine_state: DishwasherState
     program: str
     remaining_minutes: int
+    delayed_start_hours: Optional[int]
     door_open: bool
+    door_open_allowed: Optional[bool]
     eco_mode: bool
     remote_control: bool
+    salt_empty: bool
+    rinse_aid_empty: bool
 
     @classmethod
     def from_json(cls, json):
@@ -188,9 +192,13 @@ class DishwasherStatus:
             machine_state=DishwasherState(int(json["StatoDWash"])),
             program=DishwasherStatus.parse_program(json),
             remaining_minutes=int(json["RemTime"]),
+            delayed_start_hours=int(json["DelayStart"]) if json["DelayStart"] != "0" else None,
             door_open=json["OpenDoor"] != "0",
+            door_open_allowed=json["OpenDoorOpt"] == "1" if "OpenDoorOpt" in json else None,
             eco_mode=json["Eco"] != "0",
-            remote_control=json["StatoWiFi"] == "1"
+            remote_control=json["StatoWiFi"] == "1",
+            salt_empty=json["MissSalt"] == "1",
+            rinse_aid_empty=json["MissRinse"] == "1"
         )
 
     @staticmethod

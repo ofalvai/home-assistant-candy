@@ -381,7 +381,15 @@ class CandyDishwasherSensor(CandyBaseSensor):
             "remote_control": status.remote_control,
             "door_open": status.door_open,
             "eco_mode": status.eco_mode,
+            "salt_empty": status.salt_empty,
+            "rinse_aid_empty": status.rinse_aid_empty
         }
+
+        if status.door_open_allowed is not None:
+            attributes["door_open_allowed"] = status.door_open_allowed
+
+        if status.delayed_start_hours is not None:
+            attributes["delayed_start_hours"] = status.delayed_start_hours
 
         return attributes
 
