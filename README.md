@@ -10,9 +10,13 @@ This is still work-in-progress, it may not support every appliance type or featu
 
 
 ## Features
-- Supported appliances: washing machine, tumble dryer, oven
+- Supported appliances:
+   - washing machine 
+   - tumble dryer
+   - oven
+   - dishwasher
 - Uses the local API and its status endpoint
-- Displays the machine status, wash cycle status, remaining time and some other attributes
+- Creates various sensors, such as overall state and remaining time. Everything else is exposed as sensor attributes
 
 ## Installation
 

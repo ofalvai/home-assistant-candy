@@ -72,6 +72,7 @@ class WashProgramState(Enum):
             return "%s" % self
 
 
+<<<<<<< HEAD
 class DryerProgramState(Enum):
     STOPPED = 0
     RUNNING = 2
@@ -88,6 +89,8 @@ class DryerProgramState(Enum):
             return "%s" % self
 
 
+=======
+>>>>>>> 715cc38c827485f2a47a35e6e676ff5c7c7d29f6
 @dataclass
 class WashingMachineStatus:
     machine_state: MachineState
@@ -113,6 +116,22 @@ class WashingMachineStatus:
         )
 
 
+class DryerProgramState(Enum):
+    STOPPED = 0
+    RUNNING = 2
+    END = 3
+
+    def __str__(self):
+        if self == DryerProgramState.STOPPED:
+            return "Stopped"
+        elif self == DryerProgramState.RUNNING:
+            return "Running"
+        elif self == DryerProgramState.END:
+            return "End"
+        else:
+            return "%s" % self
+
+
 @dataclass
 class TumbleDryerStatus:
     machine_state: MachineState
@@ -121,28 +140,101 @@ class TumbleDryerStatus:
     remaining_minutes: int
     remote_control: bool
     dry_level: int
+    dry_level_selected: int
     refresh: bool
     need_clean_filter: bool
-    full_water_tank: bool
-    drylevel_selected: int
-    door_close: bool
+    water_tank_full: bool
+    door_closed: bool
 
     @classmethod
     def from_json(cls, json):
         return cls(
-            machine_state=MachineState(int(json["StatoTD"])),  # TODO?
+            machine_state=MachineState(int(json["StatoTD"])),
             program_state=DryerProgramState(int(json["PrPh"])),
             program=int(json["Pr"]),
             remaining_minutes=int(json["RemTime"]),
             remote_control=json["StatoWiFi"] == "1",
             dry_level=int(json["DryLev"]),
+            dry_level_selected=int(json["DryingManagerLevel"]),
             refresh=json["Refresh"] == "1",
             need_clean_filter=json["CleanFilter"] == "1",
-            full_water_tank=json["WaterTankFull"] == "1",
-            drylevel_selected=int(json["DryingManagerLevel"]),
-            door_close=json["DoorState"] == "1",
-
+            water_tank_full=json["WaterTankFull"] == "1",
+            door_closed=json["DoorState"] == "1",
         )
+
+
+class DishwasherState(Enum):
+    """
+    Dishwashers have a single state combining the machine state and program state
+    """
+
+    IDLE = 0
+    PRE_WASH = 1
+    WASH = 2
+    RINSE = 3
+    DRYING = 4
+    FINISHED = 5
+
+    def __str__(self):
+        if self == DishwasherState.IDLE:
+            return "Idle"
+        elif self == DishwasherState.PRE_WASH:
+            return "Pre-wash"
+        elif self == DishwasherState.WASH:
+            return "Wash"
+        elif self == DishwasherState.RINSE:
+            return "Rinse"
+        elif self == DishwasherState.DRYING:
+            return "Drying"
+        elif self == DishwasherState.FINISHED:
+            return "Finished"
+        else:
+            return "%s" % self
+
+
+@dataclass
+class DishwasherStatus:
+    machine_state: DishwasherState
+    program: str
+    remaining_minutes: int
+    delayed_start_hours: Optional[int]
+    door_open: bool
+    door_open_allowed: Optional[bool]
+    eco_mode: bool
+    remote_control: bool
+    salt_empty: bool
+    rinse_aid_empty: bool
+
+    @classmethod
+    def from_json(cls, json):
+        return cls(
+            machine_state=DishwasherState(int(json["StatoDWash"])),
+            program=DishwasherStatus.parse_program(json),
+            remaining_minutes=int(json["RemTime"]),
+            delayed_start_hours=int(json["DelayStart"]) if json["DelayStart"] != "0" else None,
+            door_open=json["OpenDoor"] != "0",
+            door_open_allowed=json["OpenDoorOpt"] == "1" if "OpenDoorOpt" in json else None,
+            eco_mode=json["Eco"] != "0",
+            remote_control=json["StatoWiFi"] == "1",
+            salt_empty=json["MissSalt"] == "1",
+            rinse_aid_empty=json["MissRinse"] == "1"
+        )
+
+    @staticmethod
+    def parse_program(json) -> str:
+        """
+        Parse final program label, like P1, P1+, P1-
+        """
+        program = json["Program"]
+        # Some dishwasher don't include OpzProg in there answers 
+        option = json.get("OpzProg")
+        if option == "p":
+            return program + "+"
+        elif option == "m":
+            return program + "-"
+        else:
+            # Third OpzProg value is 0
+            return program
 
 
 class OvenState(Enum):

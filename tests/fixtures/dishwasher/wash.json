@@ -1,0 +1,21 @@
+{
+  "statusDWash": {
+    "StatoWiFi": "0",
+    "StatoDWash": "2",
+    "CodiceErrore": "E0",
+    "StartStop": "0",
+    "Program": "P2",
+    "OpzProg": "m",
+    "DelayStart": "0",
+    "RemTime": "68",
+    "TreinUno": "0",
+    "Eco": "1",
+    "MetaCarico": "0",
+    "ExtraDry": "0",
+    "MissSalt": "1",
+    "MissRinse": "1",
+    "OpenDoor": "0",
+    "Reset": "0",
+    "FWver": "L1.12"
+  }
+}

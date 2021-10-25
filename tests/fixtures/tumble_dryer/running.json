@@ -1,0 +1,29 @@
+{
+  "statusTD": {
+    "StatoWiFi": "1",
+    "StatoTD": "2",
+    "CodiceErrore": "0",
+    "Pr": "1",
+    "PrPh": "2",
+    "RemTime": "150",
+    "DryLev": "2",
+    "Time": "0",
+    "Rapido": "0",
+    "Opt1": "1",
+    "Opt2": "1",
+    "Opt3": "0",
+    "Opt4": "0",
+    "Opt5": "0",
+    "Opt6": "0",
+    "Opt7": "0",
+    "Opt8": "0",
+    "Refresh": "0",
+    "CleanFilter": "0",
+    "WaterTankFull": "0",
+    "DryingManagerLevel": "1",
+    "DelVal": "0",
+    "DoorState": "1",
+    "RecipeId": "NULL",
+    "CheckUpState": "0"
+  }
+}
