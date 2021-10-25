@@ -72,7 +72,6 @@ class WashProgramState(Enum):
             return "%s" % self
 
 
-<<<<<<< HEAD
 class DryerProgramState(Enum):
     STOPPED = 0
     RUNNING = 2
@@ -89,8 +88,6 @@ class DryerProgramState(Enum):
             return "%s" % self
 
 
-=======
->>>>>>> 715cc38c827485f2a47a35e6e676ff5c7c7d29f6
 @dataclass
 class WashingMachineStatus:
     machine_state: MachineState
