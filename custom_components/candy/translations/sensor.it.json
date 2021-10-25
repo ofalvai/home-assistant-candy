@@ -19,6 +19,11 @@
       "Spin - Good Night": "In centrifuga - Modalità Notte",
       "Spin": "In centrifuga",
       "Heating": "Sto riscaldando"
+      "No Dry": "No asciugatura"
+      "Iron Dry": "Pronto Stiro"
+      "Hang Dry": "Asciutto No Stiro"
+      "Store Dry": "Asciutto Armadio"
+      "Bone Dry": "Extra Asciutto"
     }
   }
 }
