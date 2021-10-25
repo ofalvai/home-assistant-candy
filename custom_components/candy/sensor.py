@@ -234,7 +234,10 @@ class CandyTumbleStatusSensor(CandyBaseSensor):
     @property
     def state(self) -> StateType:
         status: TumbleDryerStatus = self.coordinator.data
-        return str(status.program_state)
+        if status.program_state in [DryerProgramState.RUNNING]:
+           return str(status.cycle_state)
+        else
+           return str(status.program_state)
 
     @property
     def icon(self) -> str:
