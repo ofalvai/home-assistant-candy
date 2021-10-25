@@ -3,7 +3,7 @@ from typing import Mapping, Any
 
 from homeassistant.helpers.typing import StateType
 from .client import WashingMachineStatus
-from .client.model import MachineState, TumbleDryerStatus, OvenStatus, DishwasherStatus, DishwasherState
+from .client.model import MachineState, TumbleDryerStatus, DryerProgramState, OvenStatus, DishwasherStatus, DishwasherState
 from .const import *
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
@@ -234,9 +234,9 @@ class CandyTumbleStatusSensor(CandyBaseSensor):
     @property
     def state(self) -> StateType:
         status: TumbleDryerStatus = self.coordinator.data
-        if status.program_state in [DryerProgramState.RUNNING]:
+        if status.program_state in [DryerProgramState.STOPPED]:
            return str(status.cycle_state)
-        else
+        else:
            return str(status.program_state)
 
     @property

@@ -114,11 +114,11 @@ class DryerProgramState(Enum):
 
 
 class DryerCycleState(Enum):
-   LEVEL_NONE = 0
-   LEVEL_IRON = 1
-   LEVEL_HANG = 2
-   LEVEL_STORE = 3
-   LEVEL_BONE = 4
+    LEVEL_NONE = 0
+    LEVEL_IRON = 1
+    LEVEL_HANG = 2
+    LEVEL_STORE = 3
+    LEVEL_BONE = 4
 
     def __str__(self):
         if self == DryerCycleState.LEVEL_NONE:
