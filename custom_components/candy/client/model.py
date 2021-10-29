@@ -113,10 +113,33 @@ class DryerProgramState(Enum):
             return "%s" % self
 
 
+class DryerCycleState(Enum):
+    LEVEL_NONE = 0
+    LEVEL_IRON = 1
+    LEVEL_HANG = 2
+    LEVEL_STORE = 3
+    LEVEL_BONE = 4
+
+    def __str__(self):
+        if self == DryerCycleState.LEVEL_NONE:
+            return "No Dry"
+        elif self == DryerCycleState.LEVEL_IRON:
+            return "Iron Dry"
+        elif self == DryerCycleState.LEVEL_HANG:
+            return "Hang Dry"
+        elif self == DryerCycleState.LEVEL_STORE:
+            return "Store Dry"
+        elif self == DryerCycleState.LEVEL_BONE:
+            return "Bone Dry"
+        else:
+            return "%s" % self
+
+
 @dataclass
 class TumbleDryerStatus:
     machine_state: MachineState
     program_state: DryerProgramState
+    cycle_state: DryerCycleState
     program: int
     remaining_minutes: int
     remote_control: bool
@@ -132,6 +155,7 @@ class TumbleDryerStatus:
         return cls(
             machine_state=MachineState(int(json["StatoTD"])),
             program_state=DryerProgramState(int(json["PrPh"])),
+            cycle_state=DryerCycleState(int(json["DryLev"])),
             program=int(json["Pr"]),
             remaining_minutes=int(json["RemTime"]),
             remote_control=json["StatoWiFi"] == "1",
