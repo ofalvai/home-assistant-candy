@@ -88,7 +88,7 @@ class WashingMachineStatus:
         return cls(
             machine_state=MachineState(int(json["MachMd"])),
             program_state=WashProgramState(int(json["PrPh"])),
-            program=int(json["Pr"]),
+            program=int(json["Pr"]) if "Pr" in json else int(json["PrNm"]),
             temp=int(json["Temp"]),
             spin_speed=int(json["SpinSp"]) * 100,
             remaining_minutes=round(int(json["RemTime"]) / 60),
