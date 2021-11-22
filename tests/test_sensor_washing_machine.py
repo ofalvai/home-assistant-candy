@@ -85,6 +85,25 @@ async def test_main_sensor_no_fillr(hass: HomeAssistant, aioclient_mock: Aiohttp
     }
 
 
+async def test_main_sensor_no_pr(hass: HomeAssistant, aioclient_mock: AiohttpClientMocker):
+    await init_integration(hass, aioclient_mock, load_fixture("washing_machine/no_pr.json"))
+
+    state = hass.states.get("sensor.washing_machine")
+
+    assert state
+    assert state.state == "Running"
+    assert state.attributes == {
+        'program': 6,
+        'temperature': 40,
+        'spin_speed': 1000,
+        'remaining_minutes': 46,
+        'remote_control': True,
+        'fill_percent': 53,
+        'friendly_name': 'Washing machine',
+        'icon': 'mdi:washing-machine'
+    }
+
+
 async def test_main_sensor_device_info(hass: HomeAssistant, aioclient_mock: AiohttpClientMocker):
     await init_integration(hass, aioclient_mock, load_fixture("washing_machine/idle.json"))
 
