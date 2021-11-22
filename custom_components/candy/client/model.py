@@ -3,73 +3,45 @@ from enum import Enum
 from typing import Optional
 
 
-class MachineState(Enum):
-    IDLE = 1
-    RUNNING = 2
-    PAUSED = 3
-    DELAYED_START_SELECTION = 4
-    DELAYED_START_PROGRAMMED = 5
-    ERROR = 6
-    FINISHED1 = 7
-    FINISHED2 = 8
+class StatusCode(Enum):
+    def __init__(self, code: int, label: str):
+        self.code = code
+        self.label = label
 
     def __str__(self):
-        if self == MachineState.IDLE:
-            return "Idle"
-        elif self == MachineState.RUNNING:
-            return "Running"
-        elif self == MachineState.PAUSED:
-            return "Paused"
-        elif self == MachineState.DELAYED_START_SELECTION:
-            return "Delayed start selection"
-        elif self == MachineState.DELAYED_START_PROGRAMMED:
-            return "Delayed start programmed"
-        elif self == MachineState.ERROR:
-            return "Error"
-        elif self == MachineState.FINISHED1 or self == MachineState.FINISHED2:
-            return "Finished"
-        else:
-            return "%s" % self
+        return self.label
+
+    @classmethod
+    def from_code(cls, code: int):
+        for state in cls:
+            if code == state.code:
+                return state
+        raise ValueError(f"Unrecognized code when parsing {cls}: {code}")
 
 
-class WashProgramState(Enum):
-    STOPPED = 0
-    PRE_WASH = 1
-    WASH = 2
-    RINSE = 3
-    LAST_RINSE = 4
-    END = 5
-    DRYING = 6
-    ERROR = 7
-    STEAM = 8
-    GOOD_NIGHT = 9  # TODO: GN pause?
-    SPIN = 10
+class MachineState(StatusCode):
+    IDLE = (1, "Idle")
+    RUNNING = (2, "Running")
+    PAUSED = (3, "Paused")
+    DELAYED_START_SELECTION = (4, "Delayed start selection")
+    DELAYED_START_PROGRAMMED = (5, "Delayed start programmed")
+    ERROR = (6, "Error")
+    FINISHED1 = (7, "Finished")
+    FINISHED2 = (8, "Finished")
 
-    def __str__(self):
-        if self == WashProgramState.STOPPED:
-            return "Stopped"
-        elif self == WashProgramState.PRE_WASH:
-            return "Pre-wash"
-        elif self == WashProgramState.WASH:
-            return "Wash"
-        elif self == WashProgramState.RINSE:
-            return "Rinse"
-        elif self == WashProgramState.LAST_RINSE:
-            return "Last rinse"
-        elif self == WashProgramState.END:
-            return "End"
-        elif self == WashProgramState.DRYING:
-            return "Drying"
-        elif self == WashProgramState.ERROR:
-            return "Error"
-        elif self == WashProgramState.STEAM:
-            return "Steam"
-        elif self == WashProgramState.GOOD_NIGHT:
-            return "Spin - Good Night"
-        elif self == WashProgramState.SPIN:
-            return "Spin"
-        else:
-            return "%s" % self
+
+class WashProgramState(StatusCode):
+    STOPPED = (0, "Stopped")
+    PRE_WASH = (1, "Pre-wash")
+    WASH = (2, "Wash")
+    RINSE = (3, "Rinse")
+    LAST_RINSE = (4, "Last rinse")
+    END = (5, "End")
+    DRYING = (6, "Drying")
+    ERROR = (7, "Error")
+    STEAM = (8, "Steam")
+    GOOD_NIGHT = (9, "Spin - Good Night")  # TODO: GN pause?
+    SPIN = (10, "Spin")
 
 
 @dataclass
@@ -86,8 +58,8 @@ class WashingMachineStatus:
     @classmethod
     def from_json(cls, json):
         return cls(
-            machine_state=MachineState(int(json["MachMd"])),
-            program_state=WashProgramState(int(json["PrPh"])),
+            machine_state=MachineState.from_code(int(json["MachMd"])),
+            program_state=WashProgramState.from_code(int(json["PrPh"])),
             program=int(json["Pr"]) if "Pr" in json else int(json["PrNm"]),
             temp=int(json["Temp"]),
             spin_speed=int(json["SpinSp"]) * 100,
@@ -97,42 +69,18 @@ class WashingMachineStatus:
         )
 
 
-class DryerProgramState(Enum):
-    STOPPED = 0
-    RUNNING = 2
-    END = 3
-
-    def __str__(self):
-        if self == DryerProgramState.STOPPED:
-            return "Stopped"
-        elif self == DryerProgramState.RUNNING:
-            return "Running"
-        elif self == DryerProgramState.END:
-            return "End"
-        else:
-            return "%s" % self
+class DryerProgramState(StatusCode):
+    STOPPED = (0, "Stopped")
+    RUNNING = (2, "Running")
+    END = (3, "End")
 
 
-class DryerCycleState(Enum):
-    LEVEL_NONE = 0
-    LEVEL_IRON = 1
-    LEVEL_HANG = 2
-    LEVEL_STORE = 3
-    LEVEL_BONE = 4
-
-    def __str__(self):
-        if self == DryerCycleState.LEVEL_NONE:
-            return "No Dry"
-        elif self == DryerCycleState.LEVEL_IRON:
-            return "Iron Dry"
-        elif self == DryerCycleState.LEVEL_HANG:
-            return "Hang Dry"
-        elif self == DryerCycleState.LEVEL_STORE:
-            return "Store Dry"
-        elif self == DryerCycleState.LEVEL_BONE:
-            return "Bone Dry"
-        else:
-            return "%s" % self
+class DryerCycleState(StatusCode):
+    LEVEL_NONE = (0, "No Dry")
+    LEVEL_IRON = (1, "Iron Dry")
+    LEVEL_HANG = (2, "Hang Dry")
+    LEVEL_STORE = (3, "Store Dry")
+    LEVEL_BONE = (4, "Bone Dry")
 
 
 @dataclass
@@ -153,9 +101,9 @@ class TumbleDryerStatus:
     @classmethod
     def from_json(cls, json):
         return cls(
-            machine_state=MachineState(int(json["StatoTD"])),
-            program_state=DryerProgramState(int(json["PrPh"])),
-            cycle_state=DryerCycleState(int(json["DryLev"])),
+            machine_state=MachineState.from_code(int(json["StatoTD"])),
+            program_state=DryerProgramState.from_code(int(json["PrPh"])),
+            cycle_state=DryerCycleState.from_code(int(json["DryLev"])),
             program=int(json["Pr"]),
             remaining_minutes=int(json["RemTime"]),
             remote_control=json["StatoWiFi"] == "1",
@@ -168,33 +116,17 @@ class TumbleDryerStatus:
         )
 
 
-class DishwasherState(Enum):
+class DishwasherState(StatusCode):
     """
     Dishwashers have a single state combining the machine state and program state
     """
 
-    IDLE = 0
-    PRE_WASH = 1
-    WASH = 2
-    RINSE = 3
-    DRYING = 4
-    FINISHED = 5
-
-    def __str__(self):
-        if self == DishwasherState.IDLE:
-            return "Idle"
-        elif self == DishwasherState.PRE_WASH:
-            return "Pre-wash"
-        elif self == DishwasherState.WASH:
-            return "Wash"
-        elif self == DishwasherState.RINSE:
-            return "Rinse"
-        elif self == DishwasherState.DRYING:
-            return "Drying"
-        elif self == DishwasherState.FINISHED:
-            return "Finished"
-        else:
-            return "%s" % self
+    IDLE = (0, "Idle")
+    PRE_WASH = (1, "Pre-wash")
+    WASH = (2, "Wash")
+    RINSE = (3, "Rinse")
+    DRYING = (4, "Drying")
+    FINISHED = (5, "Finished")
 
 
 @dataclass
@@ -213,7 +145,7 @@ class DishwasherStatus:
     @classmethod
     def from_json(cls, json):
         return cls(
-            machine_state=DishwasherState(int(json["StatoDWash"])),
+            machine_state=DishwasherState.from_code(int(json["StatoDWash"])),
             program=DishwasherStatus.parse_program(json),
             remaining_minutes=int(json["RemTime"]),
             delayed_start_hours=int(json["DelayStart"]) if json["DelayStart"] != "0" else None,
@@ -231,7 +163,7 @@ class DishwasherStatus:
         Parse final program label, like P1, P1+, P1-
         """
         program = json["Program"]
-        # Some dishwasher don't include OpzProg in there answers 
+        # Some dishwashers don't include the OpzProg field
         option = json.get("OpzProg")
         if option == "p":
             return program + "+"
@@ -242,17 +174,9 @@ class DishwasherStatus:
             return program
 
 
-class OvenState(Enum):
-    IDLE = 0
-    HEATING = 1
-
-    def __str__(self):
-        if self == OvenState.IDLE:
-            return "Idle"
-        elif self == OvenState.HEATING:
-            return "Heating"
-        else:
-            return "%s" % self
+class OvenState(StatusCode):
+    IDLE = (0, "Idle")
+    HEATING = (1, "Heating")
 
 
 @dataclass
@@ -268,7 +192,7 @@ class OvenStatus:
     @classmethod
     def from_json(cls, json):
         return cls(
-            machine_state=OvenState(int(json["StartStop"])),
+            machine_state=OvenState.from_code(int(json["StartStop"])),
             program=int(json["Program"]),
             selection=int(json["Selettore"]),
             temp=round(fahrenheit_to_celsius(int(json["TempRead"]))),
