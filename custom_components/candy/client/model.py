@@ -186,7 +186,7 @@ class OvenStatus:
     selection: int
     temp: float
     temp_reached: bool
-    program_length_minutes: int
+    program_length_minutes: Optional[int]
     remote_control: bool
 
     @classmethod
@@ -197,7 +197,7 @@ class OvenStatus:
             selection=int(json["Selettore"]),
             temp=round(fahrenheit_to_celsius(int(json["TempRead"]))),
             temp_reached=json["TempSetRaggiunta"] == "1",
-            program_length_minutes=int(json["TimeProgr"]),
+            program_length_minutes=int(json["TimeProgr"]) if "TimeProgr" in json else None,
             remote_control=json["StatoWiFi"] == "1",
         )
 
