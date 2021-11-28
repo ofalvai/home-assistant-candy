@@ -45,6 +45,24 @@ async def test_main_sensor_heating(hass: HomeAssistant, aioclient_mock: AiohttpC
     }
 
 
+async def test_main_sensor_no_timeprogr(hass: HomeAssistant, aioclient_mock: AiohttpClientMocker):
+    await init_integration(hass, aioclient_mock, load_fixture("oven/no_timeprogr.json"))
+
+    state = hass.states.get("sensor.oven")
+
+    assert state
+    assert state.state == "Idle"
+    assert state.attributes == {
+        "program": 0,
+        "selection": 0,
+        "temperature": 104,
+        "temperature_reached": False,
+        "remote_control": False,
+        "friendly_name": "Oven",
+        "icon": "mdi:stove"
+    }
+
+
 async def test_temp_sensor_heating(hass: HomeAssistant, aioclient_mock: AiohttpClientMocker):
     await init_integration(hass, aioclient_mock, load_fixture("oven/heating.json"))
 
