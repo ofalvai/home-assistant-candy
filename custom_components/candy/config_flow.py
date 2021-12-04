@@ -5,28 +5,20 @@ import logging
 from typing import Any
 
 import voluptuous as vol
-
 from homeassistant import config_entries
-from homeassistant.core import HomeAssistant, callback
 from homeassistant.const import CONF_IP_ADDRESS, CONF_PASSWORD
 from homeassistant.data_entry_flow import FlowResult
-from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
+from .client import detect_encryption
+from .client.decryption import Encryption
 from .const import *
 
 _LOGGER = logging.getLogger(__name__)
 
 STEP_DATA_SCHEMA = vol.Schema({
     vol.Required(CONF_IP_ADDRESS): str,
-    vol.Required(CONF_KEY_USE_ENCRYPTION, default=True): bool,
-    vol.Optional(CONF_PASSWORD): str
 })
-
-
-async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> bool:
-    """Validate the user input allows us to connect."""
-    # Everything is validated in the schema
-    return True
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -40,20 +32,29 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     ) -> FlowResult:
         """Handle the initial step."""
         if user_input is None:
-            return self.async_show_form(
-                step_id="user", data_schema=STEP_DATA_SCHEMA
-            )
+            return self.async_show_form(step_id="user", data_schema=STEP_DATA_SCHEMA)
+
+        config_data = {
+            CONF_IP_ADDRESS: user_input[CONF_IP_ADDRESS]
+        }
 
         errors = {}
-
         try:
-            await validate_input(self.hass, user_input)
-        except Exception:  # pylint: disable=broad-except
-            _LOGGER.exception("Unexpected exception")
-            errors["base"] = "unknown"
+            encryption_type, key = await detect_encryption(
+                session=async_get_clientsession(self.hass),
+                device_ip=user_input[CONF_IP_ADDRESS]
+            )
+        except Exception as e:  # pylint: disable=broad-except
+            _LOGGER.exception(e)
+            errors["base"] = "detect_encryption"
         else:
-            return self.async_create_entry(title=CONF_INTEGRATION_TITLE, data=user_input)
+            if encryption_type == Encryption.ENCRYPTION:
+                config_data[CONF_KEY_USE_ENCRYPTION] = True
+                config_data[CONF_PASSWORD] = key
+            elif encryption_type == Encryption.NO_ENCRYPTION:
+                config_data[CONF_KEY_USE_ENCRYPTION] = False
+            elif encryption_type == Encryption.ENCRYPTION_WITHOUT_KEY:
+                config_data[CONF_KEY_USE_ENCRYPTION] = True
+                config_data[CONF_PASSWORD] = ""
 
-        return self.async_show_form(
-            step_id="user", data_schema=STEP_DATA_SCHEMA, errors=errors
-        )
+            return self.async_create_entry(title=CONF_INTEGRATION_TITLE, data=config_data)

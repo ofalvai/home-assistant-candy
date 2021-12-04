@@ -4,7 +4,8 @@
             "already_configured": "Device is already configured"
         },
         "error": {
-            "unknown": "Unexpected error"
+            "unknown": "Unexpected error",
+            "detect_encryption": "Failed to detect encryption, check logs"
         },
         "step": {
             "user": {
