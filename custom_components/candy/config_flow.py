@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+import async_timeout
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_IP_ADDRESS, CONF_PASSWORD
@@ -40,10 +41,11 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         errors = {}
         try:
-            encryption_type, key = await detect_encryption(
-                session=async_get_clientsession(self.hass),
-                device_ip=user_input[CONF_IP_ADDRESS]
-            )
+            async with async_timeout.timeout(40):
+                encryption_type, key = await detect_encryption(
+                    session=async_get_clientsession(self.hass),
+                    device_ip=user_input[CONF_IP_ADDRESS]
+                )
         except Exception as e:  # pylint: disable=broad-except
             _LOGGER.exception(e)
             errors["base"] = "detect_encryption"
@@ -58,3 +60,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 config_data[CONF_PASSWORD] = ""
 
             return self.async_create_entry(title=CONF_INTEGRATION_TITLE, data=config_data)
+
+        return self.async_show_form(
+            step_id="user", data_schema=STEP_DATA_SCHEMA, errors=errors
+        )
