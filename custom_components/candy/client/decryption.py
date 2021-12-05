@@ -19,8 +19,7 @@ PLAINTEXT_CHARSET_CODEPOINTS: list[int] = [ord(c) for c in string.printable]
 class Encryption(Enum):
     NO_ENCRYPTION = 1  # Use `encrypted=0` in request, response is plaintext JSON
     ENCRYPTION = 2  # Use `encrypted=1` in request, response is encrypted bytes in hex encoding
-    ENCRYPTION_WITHOUT_KEY = 3  # Use `encrypted=1` in request, response is unencrypted hex bytes
-    # Details: https://github.com/ofalvai/home-assistant-candy/issues/35#issuecomment-965557116
+    ENCRYPTION_WITHOUT_KEY = 3  # Use `encrypted=1` in request, response is unencrypted hex bytes (https://github.com/ofalvai/home-assistant-candy/issues/35#issuecomment-965557116)
 
 
 def find_key(encrypted_response: bytes) -> Optional[str]:
