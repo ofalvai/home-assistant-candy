@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 from json import JSONDecodeError
@@ -65,6 +66,7 @@ async def detect_encryption(session: aiohttp.ClientSession, device_ip: str) -> (
     except Exception as e:
         _LOGGER.debug(e)
         _LOGGER.info("Failed to get a valid response without encryption, let's try with encrypted=1...")
+        await asyncio.sleep(5)
         url = _status_url(device_ip, use_encryption=True)
         async with session.get(url) as resp:
             resp_hex = await resp.text()  # Response is hex encoded encrypted data
