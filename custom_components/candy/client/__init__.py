@@ -29,9 +29,13 @@ class CandyClient:
     async def status(self) -> Union[WashingMachineStatus, TumbleDryerStatus, DishwasherStatus, OvenStatus]:
         url = _status_url(self.device_ip, self.use_encryption)
         async with self.session.get(url) as resp:
-            if self.encryption_key != "":
-                resp_hex = await resp.text()  # Response is hex encoded encrypted data
-                decrypted_text = decrypt(self.encryption_key.encode(), bytes.fromhex(resp_hex))
+            if self.use_encryption:
+                resp_hex = await resp.text()  # Response is hex encoded, either encrypted or not
+                if self.encryption_key != "":
+                    decrypted_text = decrypt(self.encryption_key.encode(), bytes.fromhex(resp_hex))
+                else:
+                    # Response is just hex encoded without encryption (details in detect_encryption())
+                    decrypted_text = bytes.fromhex(resp_hex)
                 resp_json = json.loads(decrypted_text)
             else:
                 resp_json = await resp.json(content_type="text/html")
