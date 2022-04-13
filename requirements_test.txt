@@ -1,5 +1,5 @@
 pytest==6.2.4
-pytest-homeassistant-custom-component==0.4.3
+pytest-homeassistant-custom-component==0.8.8
 aresponses==2.1.5
 pytest-aiohttp==0.3.0
 
