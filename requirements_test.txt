@@ -4,4 +4,4 @@ aresponses==2.1.5
 pytest-aiohttp==0.3.0
 
 # Component dependencies
-backoff==1.11.1
+backoff==2.0.1
