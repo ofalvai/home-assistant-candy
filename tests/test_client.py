@@ -1,4 +1,5 @@
 import pytest
+from pytest_homeassistant_custom_component.common import load_fixture
 
 from custom_components.candy.client import CandyClient, detect_encryption, Encryption
 from custom_components.candy.client.model import MachineState, WashProgramState, WashingMachineStatus, DishwasherStatus
