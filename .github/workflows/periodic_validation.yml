@@ -1,0 +1,21 @@
+name: Validate custom component periodically against the latest requirements
+
+on:
+  schedule:
+    - cron: "0 3 * * 6" # Every Saturday night
+
+jobs:
+  validate-hassfest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: home-assistant/actions/hassfest@master
+
+  validate-hacs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: HACS validation
+        uses: hacs/action@main
+        with:
+          category: integration
