@@ -1,6 +1,4 @@
 {
   "name": "Candy Simply-Fi",
-  "render_readme": true,
-  "domains": ["sensor"],
-  "iot_class": ["Local Polling"]
+  "render_readme": true
 }
