@@ -1,6 +1,6 @@
 from homeassistant.const import CONF_IP_ADDRESS, CONF_PASSWORD
 from homeassistant.core import HomeAssistant
-from pytest_homeassistant_custom_component.common import load_fixture, MockConfigEntry
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.candy import DOMAIN, CONF_KEY_USE_ENCRYPTION
 
