@@ -322,7 +322,7 @@ class HobStatus:
             return HobState.IDLE
 
 
-class HobState(StatusCode):
+class HoodState(StatusCode):
     IDLE = (0, "Idle")
     FAN = (1, "Fan")
     LIGHT = (2, "Light")
@@ -331,7 +331,7 @@ class HobState(StatusCode):
 
 @dataclass
 class HoodStatus:
-    machine_state: HobState
+    machine_state: HoodState
     light: bool
     fan: bool
     grease_filter: bool
@@ -357,15 +357,15 @@ class HoodStatus:
         Parse Hood status
         """
         if int(json["Fan"]) > 0 and json["Light"] == "1":
-            return HobState.FAN_LIGHT
+            return HoodState.FAN_LIGHT
 
         if int(json["Fan"]) > 0:
-            return HobState.FAN
+            return HoodState.FAN
 
         if json["Light"] == "1":
-            return HobState.LIGHT
+            return HoodState.LIGHT
         else:
-            return HobState.IDLE
+            return HoodState.IDLE
 
 
 class FridgeState(StatusCode):
