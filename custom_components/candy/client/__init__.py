@@ -8,7 +8,7 @@ import backoff
 from aiohttp import ClientSession
 
 from .decryption import decrypt, Encryption, find_key
-from .model import WashingMachineStatus, TumbleDryerStatus, DishwasherStatus, OvenStatus
+from .model import HobStatus, HoodStatus, FridgeStatus, WashingMachineStatus, TumbleDryerStatus, DishwasherStatus, OvenStatus
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -23,10 +23,10 @@ class CandyClient:
 
     @backoff.on_exception(backoff.expo, aiohttp.ClientError, max_tries=10, logger=__name__)
     @backoff.on_exception(backoff.expo, TimeoutError, max_tries=10, logger=__name__)
-    async def status_with_retry(self) -> Union[WashingMachineStatus, TumbleDryerStatus, DishwasherStatus, OvenStatus]:
+    async def status_with_retry(self) -> Union[WashingMachineStatus, TumbleDryerStatus, DishwasherStatus, OvenStatus, HobStatus]:
         return await self.status()
 
-    async def status(self) -> Union[WashingMachineStatus, TumbleDryerStatus, DishwasherStatus, OvenStatus]:
+    async def status(self) -> Union[WashingMachineStatus, TumbleDryerStatus, DishwasherStatus, OvenStatus, HobStatus]:
         url = _status_url(self.device_ip, self.use_encryption)
         async with self.session.get(url) as resp:
             if self.use_encryption:
@@ -38,7 +38,10 @@ class CandyClient:
                     decrypted_text = bytes.fromhex(resp_hex)
                 resp_json = json.loads(decrypted_text)
             else:
-                resp_json = await resp.json(content_type="text/html")
+                try:
+                    resp_json = await resp.json(content_type="text/html")
+                except Exception:
+                    resp_json = await resp.json()
 
             _LOGGER.debug(resp_json)
 
@@ -50,11 +53,16 @@ class CandyClient:
                 status = OvenStatus.from_json(resp_json["statusForno"])
             elif "statusDWash" in resp_json:
                 status = DishwasherStatus.from_json(resp_json["statusDWash"])
+            elif "statusHob" in resp_json:
+                status = HobStatus.from_json(resp_json["statusHob"])                
+            elif "StatusHood" in resp_json:
+                status = HoodStatus.from_json(resp_json["StatusHood"])                                
+            elif "statusRefrigerator" in resp_json:
+                status = FridgeStatus.from_json(resp_json["statusRefrigerator"])                                                
             else:
                 raise Exception("Unable to detect machine type from API response", resp_json)
 
             return status
-
 
 async def detect_encryption(session: aiohttp.ClientSession, device_ip: str) -> (Encryption, Optional[str]):
     # noinspection PyBroadException

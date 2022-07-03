@@ -19,6 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 
 STEP_DATA_SCHEMA = vol.Schema({
     vol.Required(CONF_IP_ADDRESS): str,
+    vol.Required(CONF_KEY_USE_ENCRYPTION): bool    
 })
 
 
@@ -36,30 +37,36 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return self.async_show_form(step_id="user", data_schema=STEP_DATA_SCHEMA)
 
         config_data = {
-            CONF_IP_ADDRESS: user_input[CONF_IP_ADDRESS]
+            CONF_IP_ADDRESS: user_input[CONF_IP_ADDRESS],
+            CONF_KEY_USE_ENCRYPTION: user_input[CONF_KEY_USE_ENCRYPTION]
         }
 
         errors = {}
-        try:
-            async with async_timeout.timeout(40):
-                encryption_type, key = await detect_encryption(
-                    session=async_get_clientsession(self.hass),
-                    device_ip=user_input[CONF_IP_ADDRESS]
-                )
-        except Exception as e:  # pylint: disable=broad-except
-            _LOGGER.exception(e)
-            errors["base"] = "detect_encryption"
+        if config_data[CONF_KEY_USE_ENCRYPTION] == True:
+           try:
+               async with async_timeout.timeout(40):
+                   encryption_type, key = await detect_encryption(
+                       session=async_get_clientsession(self.hass),
+                       device_ip=user_input[CONF_IP_ADDRESS]
+                   )
+           except Exception as e:  # pylint: disable=broad-except
+               _LOGGER.exception(e)
+               errors["base"] = "detect_encryption"
+           else:
+               if encryption_type == Encryption.ENCRYPTION:
+                   config_data[CONF_KEY_USE_ENCRYPTION] = True
+                   config_data[CONF_PASSWORD] = key
+               elif encryption_type == Encryption.NO_ENCRYPTION:
+                   config_data[CONF_KEY_USE_ENCRYPTION] = False
+               elif encryption_type == Encryption.ENCRYPTION_WITHOUT_KEY:
+                   config_data[CONF_KEY_USE_ENCRYPTION] = True
+                   config_data[CONF_PASSWORD] = ""
+               return self.async_create_entry(title=CONF_INTEGRATION_TITLE, data=config_data)
         else:
-            if encryption_type == Encryption.ENCRYPTION:
-                config_data[CONF_KEY_USE_ENCRYPTION] = True
-                config_data[CONF_PASSWORD] = key
-            elif encryption_type == Encryption.NO_ENCRYPTION:
-                config_data[CONF_KEY_USE_ENCRYPTION] = False
-            elif encryption_type == Encryption.ENCRYPTION_WITHOUT_KEY:
-                config_data[CONF_KEY_USE_ENCRYPTION] = True
-                config_data[CONF_PASSWORD] = ""
-
-            return self.async_create_entry(title=CONF_INTEGRATION_TITLE, data=config_data)
+            config_data[CONF_PASSWORD] = ""
+            return self.async_create_entry(
+                title=CONF_INTEGRATION_TITLE, data=config_data
+            )
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_DATA_SCHEMA, errors=errors
