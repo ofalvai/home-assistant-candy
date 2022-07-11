@@ -206,6 +206,7 @@ class OvenStatus:
     temp_reached: bool
     program_length_minutes: Optional[int]
     remote_control: bool
+    remaining_minutes: int
 
     @classmethod
     def from_json(cls, json):
@@ -220,9 +221,8 @@ class OvenStatus:
             if not json["Program"].startswith("P")
             else int(json["TempSet"]) / 10,
             temp_reached=json["TempSetRaggiunta"] == "1",
-            program_length_minutes=int(json["TimeProgr"])
-            if "TimeProgr" in json
-            else None,
+            program_length_minutes=int(json["TimeProgr"]) if "TimeProgr" in json else None,
+            remaining_minutes=int(json["RemainingTimeProgr"]) / 60 if "RemainingTimeProgr" in json else None,
             remote_control=json["StatoWiFi"] == "1",
         )
 

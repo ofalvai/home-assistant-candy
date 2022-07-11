@@ -10,6 +10,7 @@ from .client.model import (
     HobStatus,
     HoodStatus,
     MachineState,
+    OvenState,
     TumbleDryerStatus,
     DryerProgramState,
     OvenStatus,
@@ -58,6 +59,7 @@ async def async_setup_entry(
                 CandyOvenSensor(coordinator, config_id),
                 CandyOvenTempSensor(coordinator, config_id),
                 CandyOvenSetTempSensor(coordinator, config_id),
+                CandyOvenRemainingTimeSensor(coordinator, config_id),                
             ]
         )
     elif type(coordinator.data) is HoodStatus:
@@ -413,8 +415,41 @@ class CandyOvenSensor(CandyBaseSensor):
         if status.program_length_minutes is not None:
             attributes["program_length_minutes"] = status.program_length_minutes
 
+        if status.remaining_minutes is not None:
+            attributes["remaining_minutes"] = status.remaining_minutes
+            
         return attributes
 
+class CandyOvenRemainingTimeSensor(CandyBaseSensor):
+    def device_name(self) -> str:
+        return DEVICE_NAME_DISHWASHER
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return "Oven remaining time"
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_OVEN_REMAINING_TIME.format(self.config_id)
+
+    @property
+    def state(self) -> StateType:
+        status: OvenStatus = self.coordinator.data
+        if status.machine_state in [OvenState.IDLE]:
+            return 0
+        else:
+            return status.remaining_minutes
+
+    @property
+    def unit_of_measurement(self) -> str:
+        return TIME_MINUTES
+
+    @property
+    def icon(self) -> str:
+        return "mdi:progress-clock"
 
 class CandyOvenTempSensor(CandyBaseSensor):
     def device_name(self) -> str:

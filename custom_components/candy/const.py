@@ -20,6 +20,7 @@ UNIQUE_ID_TUMBLE_REMAINING_TIME = "{0}-tumble_remaining_time"
 UNIQUE_ID_OVEN = "{0}-oven"
 UNIQUE_ID_OVEN_BINARY = "{0}-oven_binary"
 UNIQUE_ID_OVEN_TEMP = "{0}-oven-temp"
+UNIQUE_ID_OVEN_REMAINING_TIME = "{0}-remaining-time"
 UNIQUE_ID_OVEN_SET_TEMP = "{0}-oven-set-temp"
 
 
