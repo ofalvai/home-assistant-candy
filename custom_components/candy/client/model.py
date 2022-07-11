@@ -222,7 +222,7 @@ class OvenStatus:
             else int(json["TempSet"]) / 10,
             temp_reached=json["TempSetRaggiunta"] == "1",
             program_length_minutes=int(json["TimeProgr"]) if "TimeProgr" in json else None,
-            remaining_minutes=int(json["RemainingTimeProgr"]) / 60 if "RemainingTimeProgr" in json else None,
+            remaining_minutes=int(int(json["RemainingTimeProgr"]) / 60) if "RemainingTimeProgr" in json else None,
             remote_control=json["StatoWiFi"] == "1",
         )
 
