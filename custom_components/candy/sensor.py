@@ -83,6 +83,16 @@ async def async_setup_entry(
                     CandyHobHeater2Sensor(coordinator, config_id),
                     CandyHobHeater3Sensor(coordinator, config_id),
                     CandyHobHeater4Sensor(coordinator, config_id),
+                    
+                    CandyHobHeaterPower1Sensor(coordinator, config_id),
+                    CandyHobHeaterPower2Sensor(coordinator, config_id),
+                    CandyHobHeaterPower3Sensor(coordinator, config_id),
+                    CandyHobHeaterPower4Sensor(coordinator, config_id),
+                    
+                    CandyHobHeaterRemainingTime1Sensor(coordinator, config_id),
+                    CandyHobHeaterRemainingTime2Sensor(coordinator, config_id),
+                    CandyHobHeaterRemainingTime3Sensor(coordinator, config_id),
+                    CandyHobHeaterRemainingTime4Sensor(coordinator, config_id),                    
                 ]
             )
         elif coordinator.data.heater3 is not None:
@@ -92,6 +102,14 @@ async def async_setup_entry(
                     CandyHobHeater1Sensor(coordinator, config_id),
                     CandyHobHeater2Sensor(coordinator, config_id),
                     CandyHobHeater3Sensor(coordinator, config_id),
+                                        
+                    CandyHobHeaterPower1Sensor(coordinator, config_id),
+                    CandyHobHeaterPower2Sensor(coordinator, config_id),
+                    CandyHobHeaterPower3Sensor(coordinator, config_id),
+                    
+                    CandyHobHeaterRemainingTime1Sensor(coordinator, config_id),
+                    CandyHobHeaterRemainingTime2Sensor(coordinator, config_id),
+                    CandyHobHeaterRemainingTime3Sensor(coordinator, config_id),
                 ]
             )
         elif coordinator.data.heater2 is not None:
@@ -100,6 +118,12 @@ async def async_setup_entry(
                     CandyHobSensor(coordinator, config_id),
                     CandyHobHeater1Sensor(coordinator, config_id),
                     CandyHobHeater2Sensor(coordinator, config_id),
+                                       
+                    CandyHobHeaterPower1Sensor(coordinator, config_id),
+                    CandyHobHeaterPower2Sensor(coordinator, config_id),
+                    
+                    CandyHobHeaterRemainingTime1Sensor(coordinator, config_id),
+                    CandyHobHeaterRemainingTime2Sensor(coordinator, config_id),                    
                 ]
             )
         elif coordinator.data.heater1 is not None:
@@ -107,6 +131,8 @@ async def async_setup_entry(
                 [
                     CandyHobSensor(coordinator, config_id),
                     CandyHobHeater1Sensor(coordinator, config_id),
+                    CandyHobHeaterPower1Sensor(coordinator, config_id),                   
+                    CandyHobHeaterRemainingTime1Sensor(coordinator, config_id),                    
                 ]
             )
     elif type(coordinator.data) is DishwasherStatus:
@@ -365,7 +391,7 @@ class CandyOvenSensor(CandyBaseSensor):
     @property
     def state(self) -> StateType:
         status: OvenStatus = self.coordinator.data
-        return str(status.machine_state)
+        return str(status.selection)
 
     @property
     def icon(self) -> str:
@@ -503,7 +529,7 @@ class CandyHobHeater1Sensor(CandyBaseSensor):
     def state(self) -> StateType:
         status: HobStatus = self.coordinator.data
 
-        return str(status.heater1.heater_state) + " (" + str(status.heater1.power) + ")"
+        return str(status.heater1.heater_state)
 
     @property
     def unit_of_measurement(self) -> str:
@@ -556,7 +582,7 @@ class CandyHobHeater2Sensor(CandyBaseSensor):
     def state(self) -> StateType:
         status: HobStatus = self.coordinator.data
 
-        return str(status.heater2.heater_state) + " (" + str(status.heater2.power) + ")"
+        return str(status.heater2.heater_state)
 
     @property
     def unit_of_measurement(self) -> str:
@@ -609,7 +635,7 @@ class CandyHobHeater3Sensor(CandyBaseSensor):
     def state(self) -> StateType:
         status: HobStatus = self.coordinator.data
 
-        return str(status.heater3.heater_state) + " (" + str(status.heater3.power) + ")"
+        return str(status.heater3.heater_state)
 
     @property
     def unit_of_measurement(self) -> str:
@@ -662,7 +688,7 @@ class CandyHobHeater4Sensor(CandyBaseSensor):
     def state(self) -> StateType:
         status: HobStatus = self.coordinator.data
 
-        return str(status.heater4.heater_state) + " (" + str(status.heater4.power) + ")"
+        return str(status.heater4.heater_state)
 
     @property
     def unit_of_measurement(self) -> str:
@@ -694,6 +720,323 @@ class CandyHobHeater4Sensor(CandyBaseSensor):
             attributes["timer_minutes"] = status.heater4.timer_minutes
 
         return attributes
+
+class CandyHobHeaterPower1Sensor(CandyBaseSensor):
+    def device_name(self) -> str:
+        return DEVICE_NAME_HOB
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return DEVICE_NAME_HOB_HEATER_POWER.format("1")
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_HOB_HEATER_POWER.format(self.config_id, "1")
+
+    @property
+    def state(self) -> StateType:
+        status: HobStatus = self.coordinator.data
+
+        return str(status.heater1.power)
+
+    @property
+    def unit_of_measurement(self) -> str:
+        return ""
+
+    @property
+    def icon(self) -> str:
+        return "mdi:lightning-bolt-circle"
+
+    @property
+    def extra_state_attributes(self) -> Mapping[str, Any]:
+        status: HobStatus = self.coordinator.data
+
+        attributes = {
+            "heater_state": status.heater1.heater_state,
+            "status": status.heater1.status,
+            "pan": status.heater1.pan,
+            "combi": status.heater1.combi,
+            "hot": status.heater1.hot,
+            "low": status.heater1.low,
+            "power": status.heater1.power,
+        }
+
+        if status.heater1.timer_minutes is not None:
+            attributes["timer_minutes"] = status.heater1.timer_minutes
+
+        return attributes
+
+class CandyHobHeaterPower2Sensor(CandyBaseSensor):
+    def device_name(self) -> str:
+        return DEVICE_NAME_HOB
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return DEVICE_NAME_HOB_HEATER_POWER.format("2")
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_HOB_HEATER_POWER.format(self.config_id, "2")
+
+    @property
+    def state(self) -> StateType:
+        status: HobStatus = self.coordinator.data
+
+        return str(status.heater2.power)
+
+    @property
+    def unit_of_measurement(self) -> str:
+        return ""
+
+    @property
+    def icon(self) -> str:
+        return "mdi:lightning-bolt-circle"
+
+    @property
+    def extra_state_attributes(self) -> Mapping[str, Any]:
+        status: HobStatus = self.coordinator.data
+
+        attributes = {
+            "heater_state": status.heater2.heater_state,
+            "status": status.heater2.status,
+            "pan": status.heater2.pan,
+            "combi": status.heater2.combi,
+            "hot": status.heater2.hot,
+            "low": status.heater2.low,
+            "power": status.heater2.power,
+        }
+
+        if status.heater2.timer_minutes is not None:
+            attributes["timer_minutes"] = status.heater2.timer_minutes
+
+        return attributes
+
+class CandyHobHeaterPower3Sensor(CandyBaseSensor):
+    def device_name(self) -> str:
+        return DEVICE_NAME_HOB
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return DEVICE_NAME_HOB_HEATER_POWER.format("3")
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_HOB_HEATER_POWER.format(self.config_id, "3")
+
+    @property
+    def state(self) -> StateType:
+        status: HobStatus = self.coordinator.data
+
+        return str(status.heater3.power)
+
+    @property
+    def unit_of_measurement(self) -> str:
+        return ""
+
+    @property
+    def icon(self) -> str:
+        return "mdi:lightning-bolt-circle"
+
+    @property
+    def extra_state_attributes(self) -> Mapping[str, Any]:
+        status: HobStatus = self.coordinator.data
+
+        attributes = {
+            "heater_state": status.heater3.heater_state,
+            "status": status.heater3.status,
+            "pan": status.heater3.pan,
+            "combi": status.heater3.combi,
+            "hot": status.heater3.hot,
+            "low": status.heater3.low,
+            "power": status.heater3.power,
+        }
+
+        if status.heater3.timer_minutes is not None:
+            attributes["timer_minutes"] = status.heater3.timer_minutes
+
+        return attributes
+
+class CandyHobHeaterPower4Sensor(CandyBaseSensor):
+    def device_name(self) -> str:
+        return DEVICE_NAME_HOB
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return DEVICE_NAME_HOB_HEATER_POWER.format("4")
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_HOB_HEATER_POWER.format(self.config_id, "4")
+
+    @property
+    def state(self) -> StateType:
+        status: HobStatus = self.coordinator.data
+
+        return str(status.heater4.power)
+
+    @property
+    def unit_of_measurement(self) -> str:
+        return ""
+
+    @property
+    def icon(self) -> str:
+        return "mdi:lightning-bolt-circle"
+
+    @property
+    def extra_state_attributes(self) -> Mapping[str, Any]:
+        status: HobStatus = self.coordinator.data
+
+        attributes = {
+            "heater_state": status.heater4.heater_state,
+            "status": status.heater4.status,
+            "pan": status.heater4.pan,
+            "combi": status.heater4.combi,
+            "hot": status.heater4.hot,
+            "low": status.heater4.low,
+            "power": status.heater4.power,
+        }
+
+        if status.heater4.timer_minutes is not None:
+            attributes["timer_minutes"] = status.heater4.timer_minutes
+
+        return attributes        
+
+class CandyHobHeaterRemainingTime1Sensor(CandyBaseSensor):
+    def device_name(self) -> str:
+        return DEVICE_NAME_HOB
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return DEVICE_NAME_HOB_HEATER_REMAINING_TIME.format("1")
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_HOB_HEATER_REMAINING_TIME.format(self.config_id, "1")
+
+    @property
+    def state(self) -> StateType:
+        status: HobStatus = self.coordinator.data
+        if status.heater1.heater_state in [HobState.HEATING]:
+            return str(status.heater1.timer_minutes)
+        else:
+            return 0
+
+    @property
+    def unit_of_measurement(self) -> str:
+        return TIME_MINUTES
+
+    @property
+    def icon(self) -> str:
+        return "mdi:progress-clock"
+       
+class CandyHobHeaterRemainingTime2Sensor(CandyBaseSensor):
+    def device_name(self) -> str:
+        return DEVICE_NAME_HOB
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return DEVICE_NAME_HOB_HEATER_REMAINING_TIME.format("2")
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_HOB_HEATER_REMAINING_TIME.format(self.config_id, "2")
+
+    @property
+    def state(self) -> StateType:
+        status: HobStatus = self.coordinator.data
+        if status.heater2.heater_state in [HobState.HEATING]:
+            return str(status.heater2.timer_minutes)
+        else:
+            return 0
+
+    @property
+    def unit_of_measurement(self) -> str:
+        return TIME_MINUTES
+
+    @property
+    def icon(self) -> str:
+        return "mdi:progress-clock"
+
+class CandyHobHeaterRemainingTime3Sensor(CandyBaseSensor):
+    def device_name(self) -> str:
+        return DEVICE_NAME_HOB
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return DEVICE_NAME_HOB_HEATER_REMAINING_TIME.format("3")
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_HOB_HEATER_REMAINING_TIME.format(self.config_id, "3")
+
+    @property
+    def state(self) -> StateType:
+        status: HobStatus = self.coordinator.data
+        if status.heater3.heater_state in [HobState.HEATING]:
+            return str(status.heater3.timer_minutes)
+        else:
+            return 0
+
+    @property
+    def unit_of_measurement(self) -> str:
+        return TIME_MINUTES
+
+    @property
+    def icon(self) -> str:
+        return "mdi:progress-clock"
+
+class CandyHobHeaterRemainingTime4Sensor(CandyBaseSensor):
+    def device_name(self) -> str:
+        return DEVICE_NAME_HOB
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return DEVICE_NAME_HOB_HEATER_REMAINING_TIME.format("4")
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_HOB_HEATER_REMAINING_TIME.format(self.config_id, "4")
+
+    @property
+    def state(self) -> StateType:
+        status: HobStatus = self.coordinator.data
+        if status.heater4.heater_state in [HobState.HEATING]:
+            return str(status.heater4.timer_minutes)
+        else:
+            return 0
+        
+
+    @property
+    def unit_of_measurement(self) -> str:
+        return TIME_MINUTES
+
+    @property
+    def icon(self) -> str:
+        return "mdi:progress-clock"
 
 
 class CandyDishwasherSensor(CandyBaseSensor):

@@ -8,31 +8,60 @@ import backoff
 from aiohttp import ClientSession
 
 from .decryption import decrypt, Encryption, find_key
-from .model import HobStatus, HoodStatus, FridgeStatus, WashingMachineStatus, TumbleDryerStatus, DishwasherStatus, OvenStatus
+from .model import (
+    HobStatus,
+    HoodStatus,
+    FridgeStatus,
+    WashingMachineStatus,
+    TumbleDryerStatus,
+    DishwasherStatus,
+    OvenStatus,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class CandyClient:
-
-    def __init__(self, session: ClientSession, device_ip: str, encryption_key: str, use_encryption: bool):
-        self.session = session  # Session is the default HA session, shouldn't be cleaned up
+    def __init__(
+        self,
+        session: ClientSession,
+        device_ip: str,
+        encryption_key: str,
+        use_encryption: bool,
+    ):
+        self.session = (
+            session  # Session is the default HA session, shouldn't be cleaned up
+        )
         self.device_ip = device_ip
         self.encryption_key = encryption_key
         self.use_encryption = use_encryption
 
-    @backoff.on_exception(backoff.expo, aiohttp.ClientError, max_tries=10, logger=__name__)
+    @backoff.on_exception(
+        backoff.expo, aiohttp.ClientError, max_tries=10, logger=__name__
+    )
     @backoff.on_exception(backoff.expo, TimeoutError, max_tries=10, logger=__name__)
-    async def status_with_retry(self) -> Union[WashingMachineStatus, TumbleDryerStatus, DishwasherStatus, OvenStatus, HobStatus]:
+    async def status_with_retry(
+        self,
+    ) -> Union[
+        WashingMachineStatus, TumbleDryerStatus, DishwasherStatus, OvenStatus, HobStatus
+    ]:
         return await self.status()
 
-    async def status(self) -> Union[WashingMachineStatus, TumbleDryerStatus, DishwasherStatus, OvenStatus, HobStatus]:
+    async def status(
+        self,
+    ) -> Union[
+        WashingMachineStatus, TumbleDryerStatus, DishwasherStatus, OvenStatus, HobStatus
+    ]:
         url = _status_url(self.device_ip, self.use_encryption)
         async with self.session.get(url) as resp:
             if self.use_encryption:
-                resp_hex = await resp.text()  # Response is hex encoded, either encrypted or not
+                resp_hex = (
+                    await resp.text()
+                )  # Response is hex encoded, either encrypted or not
                 if self.encryption_key != "":
-                    decrypted_text = decrypt(self.encryption_key.encode(), bytes.fromhex(resp_hex))
+                    decrypted_text = decrypt(
+                        self.encryption_key.encode(), bytes.fromhex(resp_hex)
+                    )
                 else:
                     # Response is just hex encoded without encryption (details in detect_encryption())
                     decrypted_text = bytes.fromhex(resp_hex)
@@ -54,17 +83,22 @@ class CandyClient:
             elif "statusDWash" in resp_json:
                 status = DishwasherStatus.from_json(resp_json["statusDWash"])
             elif "statusHob" in resp_json:
-                status = HobStatus.from_json(resp_json["statusHob"])                
+                status = HobStatus.from_json(resp_json["statusHob"])
             elif "StatusHood" in resp_json:
-                status = HoodStatus.from_json(resp_json["StatusHood"])                                
+                status = HoodStatus.from_json(resp_json["StatusHood"])
             elif "statusRefrigerator" in resp_json:
-                status = FridgeStatus.from_json(resp_json["statusRefrigerator"])                                                
+                status = FridgeStatus.from_json(resp_json["statusRefrigerator"])
             else:
-                raise Exception("Unable to detect machine type from API response", resp_json)
+                raise Exception(
+                    "Unable to detect machine type from API response", resp_json
+                )
 
             return status
 
-async def detect_encryption(session: aiohttp.ClientSession, device_ip: str) -> (Encryption, Optional[str]):
+
+async def detect_encryption(
+    session: aiohttp.ClientSession, device_ip: str
+) -> (Encryption, Optional[str]):
     # noinspection PyBroadException
     try:
         _LOGGER.info("Trying to get a response without encryption (encrypted=0)...")
@@ -72,21 +106,29 @@ async def detect_encryption(session: aiohttp.ClientSession, device_ip: str) -> (
         async with session.get(url) as resp:
             resp_json = await resp.json(content_type="text/html")
             assert resp_json.get("response") != "BAD REQUEST"
-            _LOGGER.info("Received unencrypted JSON response, no need to use key for decryption")
+            _LOGGER.info(
+                "Received unencrypted JSON response, no need to use key for decryption"
+            )
             return Encryption.NO_ENCRYPTION, None
     except Exception as e:
         _LOGGER.debug(e)
-        _LOGGER.info("Failed to get a valid response without encryption, let's try with encrypted=1...")
+        _LOGGER.info(
+            "Failed to get a valid response without encryption, let's try with encrypted=1..."
+        )
         url = _status_url(device_ip, use_encryption=True)
         async with session.get(url) as resp:
             resp_hex = await resp.text()  # Response is hex encoded encrypted data
             try:
                 json.loads(bytes.fromhex(resp_hex))
-                _LOGGER.info("Response is not encrypted (despite encryption=1 in request), no need to brute force "
-                             "the key")
+                _LOGGER.info(
+                    "Response is not encrypted (despite encryption=1 in request), no need to brute force "
+                    "the key"
+                )
                 return Encryption.ENCRYPTION_WITHOUT_KEY, None
             except JSONDecodeError:
-                _LOGGER.info("Brute force decryption key from the encrypted response...")
+                _LOGGER.info(
+                    "Brute force decryption key from the encrypted response..."
+                )
                 _LOGGER.debug(f"Response: {resp_hex}")
                 key = find_key(bytes.fromhex(resp_hex))
                 if key is None:

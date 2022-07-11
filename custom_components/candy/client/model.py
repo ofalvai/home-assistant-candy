@@ -183,11 +183,24 @@ class OvenState(StatusCode):
     HEATING = (1, "Heating")
 
 
+class OvenSelection(StatusCode):
+    IDLE = (0, "Idle")
+    CONVECTION = (3, "Convection")
+    ON_DIFFERENT_LEVELS = (5, "On differend levels")
+    CONVECTION_AND_FAN = (7, "Convection and fan")
+    DEFROSTING = (8, "Defrosting")
+    HEATING = (9, "Heating")
+    GRILL = (11, "Grill")
+    PIZZA = (13, "Pizza")
+    BOTTOM_HEATER = (14, "Bottom heater")
+    GRILL_AND_FAN = (19, "Grill and fan")
+
+
 @dataclass
 class OvenStatus:
     machine_state: OvenState
     program: int
-    selection: int
+    selection: OvenSelection
     temp: float
     tempSet: float
     temp_reached: bool
@@ -199,14 +212,13 @@ class OvenStatus:
         return cls(
             machine_state=OvenState.from_code(int(json["StartStop"])),
             program=int(only_numerics(json["Program"])),
-            selection=int(only_numerics(json["Selettore"])),
-            # this temp is wrong in my case. When oven is turn off get value 421 °C
+            selection=OvenSelection.from_code(int(only_numerics(json["Selettore"]))),
             temp=round(fahrenheit_to_celsius(int(json["TempRead"])))
-            if int(json["TempSet"]) > 0 in json
-            else 0,
+            if not json["Program"].startswith("P")
+            else int(json["TempRead"]) / 10,
             tempSet=round(fahrenheit_to_celsius(int(json["TempSet"])))
-            if round(fahrenheit_to_celsius(int(json["TempSet"]))) > 0 in json
-            else 0,
+            if not json["Program"].startswith("P")
+            else int(json["TempSet"]) / 10,
             temp_reached=json["TempSetRaggiunta"] == "1",
             program_length_minutes=int(json["TimeProgr"])
             if "TimeProgr" in json
