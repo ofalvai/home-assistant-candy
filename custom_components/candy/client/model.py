@@ -222,7 +222,7 @@ class OvenStatus:
             else int(json["TempSet"]) / 10,
             temp_reached=json["TempSetRaggiunta"] == "1",
             program_length_minutes=int(json["TimeProgr"]) if "TimeProgr" in json else None,
-            remaining_minutes=int(int(json["RemainingTimeProgr"]) / 60) if "RemainingTimeProgr" in json else None,
+            remaining_minutes=int(int(oven_remaining_minutes(json["RemainingTimeProgr"])) / 60) if "RemainingTimeProgr" in json else None,
             remote_control=json["StatoWiFi"] == "1",
         )
 
@@ -446,6 +446,15 @@ class FridgeStatus:
 def only_numerics(seq):
     seq_type = type(seq)
     return seq_type().join(filter(seq_type.isdigit, seq))
+
+
+def oven_remaining_minutes(time):
+        if int(time) > 1091:
+            return 0
+        else:
+            return time
+
+
 
 
 def fahrenheit_to_celsius(fahrenheit: float) -> float:
