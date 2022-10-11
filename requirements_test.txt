@@ -1,5 +1,5 @@
 pytest~=7.1
-pytest-homeassistant-custom-component==0.9.17
+pytest-homeassistant-custom-component==0.12.7
 
 # Component dependencies
 backoff==1.11.1
