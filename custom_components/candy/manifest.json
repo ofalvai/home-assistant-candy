@@ -6,7 +6,7 @@
   "documentation": "https://github.com/ofalvai/home-assistant-candy",
   "issue_tracker": "https://github.com/ofalvai/home-assistant-candy/issues",
   "requirements": [
-    "backoff>=1.8.0"
+    "backoff>=2.0"
   ],
   "ssdp": [],
   "zeroconf": [],
