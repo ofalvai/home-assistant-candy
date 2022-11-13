@@ -1,0 +1,21 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "L'appareil est déjà configuré"
+        },
+        "error": {
+            "unknown": "Erreur inconnue",
+            "detect_encryption": "Impossible de détecter le cryptage, vérifiez les journaux."
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "ip_address" : "Adresse IP du dispositif",
+                    "password" : "Clé de cryptage",
+                    "use_encryption" : "Utiliser la clé de cryptage"
+                }
+            }
+        }
+    },
+    "title": "Candy"
+}
