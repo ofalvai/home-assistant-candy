@@ -7,10 +7,17 @@ import aiohttp
 import backoff
 from aiohttp import ClientSession
 
+from aiolimiter import AsyncLimiter
+
 from .decryption import decrypt, Encryption, find_key
 from .model import WashingMachineStatus, TumbleDryerStatus, DishwasherStatus, OvenStatus
 
 _LOGGER = logging.getLogger(__name__)
+
+# Some devices reportedly can't handle too frequent requests and respond with BAD_REQUEST
+# This global limiter makes sure we don't call the API too fast
+# https://github.com/ofalvai/home-assistant-candy/issues/61
+_LIMITER = AsyncLimiter(max_rate=1, time_period=3)
 
 
 class CandyClient:
@@ -28,7 +35,7 @@ class CandyClient:
 
     async def status(self) -> Union[WashingMachineStatus, TumbleDryerStatus, DishwasherStatus, OvenStatus]:
         url = _status_url(self.device_ip, self.use_encryption)
-        async with self.session.get(url) as resp:
+        async with _LIMITER, self.session.get(url) as resp:
             if self.use_encryption:
                 resp_hex = await resp.text()  # Response is hex encoded, either encrypted or not
                 if self.encryption_key != "":
@@ -61,7 +68,7 @@ async def detect_encryption(session: aiohttp.ClientSession, device_ip: str) -> (
     try:
         _LOGGER.info("Trying to get a response without encryption (encrypted=0)...")
         url = _status_url(device_ip, use_encryption=False)
-        async with session.get(url) as resp:
+        async with _LIMITER, session.get(url) as resp:
             resp_json = await resp.json(content_type="text/html")
             assert resp_json.get("response") != "BAD REQUEST"
             _LOGGER.info("Received unencrypted JSON response, no need to use key for decryption")
@@ -70,7 +77,7 @@ async def detect_encryption(session: aiohttp.ClientSession, device_ip: str) -> (
         _LOGGER.debug(e)
         _LOGGER.info("Failed to get a valid response without encryption, let's try with encrypted=1...")
         url = _status_url(device_ip, use_encryption=True)
-        async with session.get(url) as resp:
+        async with _LIMITER, session.get(url) as resp:
             resp_hex = await resp.text()  # Response is hex encoded encrypted data
             try:
                 json.loads(bytes.fromhex(resp_hex))
