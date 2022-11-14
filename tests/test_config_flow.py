@@ -57,7 +57,7 @@ def detect_encryption_without_key_fixture():
         yield
 
 
-async def test_no_encryption_detected(hass, detect_no_encryption):
+async def test_no_encryption_detected(hass, detect_no_encryption): # pylint: disable=unused-argument
     """Test a successful config flow when detected encryption is no encryption."""
 
     # Initialize a config flow
@@ -84,7 +84,7 @@ async def test_no_encryption_detected(hass, detect_no_encryption):
     assert result["result"]
 
 
-async def test_detected_encryption_and_key_found(hass, detect_encryption_find_key):
+async def test_detected_encryption_and_key_found(hass, detect_encryption_find_key): # pylint: disable=unused-argument
     """Test a successful config flow when encryption is detected and key is found."""
 
     # Initialize a config flow
@@ -112,7 +112,7 @@ async def test_detected_encryption_and_key_found(hass, detect_encryption_find_ke
     assert result["result"]
 
 
-async def test_detected_encryption_and_key_not_found(hass, detect_encryption_key_not_found):
+async def test_detected_encryption_and_key_not_found(hass, detect_encryption_key_not_found): # pylint: disable=unused-argument
     """Test a failing config flow when encryption is detected and key is not found."""
     # Initialize a config flow
     result = await hass.config_entries.flow.async_init(
@@ -132,7 +132,7 @@ async def test_detected_encryption_and_key_not_found(hass, detect_encryption_key
     assert result["errors"] == {"base": "detect_encryption"}
 
 
-async def test_detected_encryption_without_key(hass, detect_encryption_without_key):
+async def test_detected_encryption_without_key(hass, detect_encryption_without_key): # pylint: disable=unused-argument
     """Test a successful config flow when encryption is detected without using a key."""
     # Initialize a config flow
     result = await hass.config_entries.flow.async_init(

@@ -1,14 +1,15 @@
 import json
 import logging
 from json import JSONDecodeError
-from typing import Union, Optional
+from typing import Optional, Tuple, Union
 
 import aiohttp
 import backoff
 from aiohttp import ClientSession
 
-from .decryption import decrypt, Encryption, find_key
-from .model import WashingMachineStatus, TumbleDryerStatus, DishwasherStatus, OvenStatus
+from .decryption import Encryption, decrypt, find_key
+from .model import (DishwasherStatus, OvenStatus, TumbleDryerStatus,
+                    WashingMachineStatus)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -56,7 +57,7 @@ class CandyClient:
             return status
 
 
-async def detect_encryption(session: aiohttp.ClientSession, device_ip: str) -> (Encryption, Optional[str]):
+async def detect_encryption(session: aiohttp.ClientSession, device_ip: str) -> Tuple[Encryption, Optional[str]]:
     # noinspection PyBroadException
     try:
         _LOGGER.info("Trying to get a response without encryption (encrypted=0)...")
@@ -66,8 +67,8 @@ async def detect_encryption(session: aiohttp.ClientSession, device_ip: str) -> (
             assert resp_json.get("response") != "BAD REQUEST"
             _LOGGER.info("Received unencrypted JSON response, no need to use key for decryption")
             return Encryption.NO_ENCRYPTION, None
-    except Exception as e:
-        _LOGGER.debug(e)
+    except Exception as err: # pylint: disable=broad-except
+        _LOGGER.debug(err)
         _LOGGER.info("Failed to get a valid response without encryption, let's try with encrypted=1...")
         url = _status_url(device_ip, use_encryption=True)
         async with session.get(url) as resp:
@@ -77,12 +78,12 @@ async def detect_encryption(session: aiohttp.ClientSession, device_ip: str) -> (
                 _LOGGER.info("Response is not encrypted (despite encryption=1 in request), no need to brute force "
                              "the key")
                 return Encryption.ENCRYPTION_WITHOUT_KEY, None
-            except JSONDecodeError:
+            except JSONDecodeError as json_err:
                 _LOGGER.info("Brute force decryption key from the encrypted response...")
-                _LOGGER.debug(f"Response: {resp_hex}")
+                _LOGGER.debug("Response: %s", resp_hex)
                 key = find_key(bytes.fromhex(resp_hex))
                 if key is None:
-                    raise ValueError("Couldn't brute force key")
+                    raise ValueError("Couldn't brute force key") from json_err
 
                 _LOGGER.info("Using key with encrypted=1 for future requests")
                 return Encryption.ENCRYPTION, key

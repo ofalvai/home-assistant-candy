@@ -1,4 +1,4 @@
-
+ # pylint: disable=line-too-long
 from custom_components.candy.client.decryption import find_key
 
 
