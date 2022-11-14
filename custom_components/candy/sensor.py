@@ -110,6 +110,9 @@ class CandyWashingMachineSensor(CandyBaseSensor):
         if status.fill_percent is not None:
             attributes["fill_percent"] = status.fill_percent
 
+        if status.program_code is not None:
+            attributes["program_code"] = status.program_code
+
         return attributes
 
 
