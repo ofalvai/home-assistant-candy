@@ -1,17 +1,20 @@
 from abc import abstractmethod
-from typing import Mapping, Any
+from typing import Any, Mapping
 
-from homeassistant.helpers.typing import StateType
-from .client import WashingMachineStatus
-from .client.model import MachineState, TumbleDryerStatus, DryerProgramState, OvenStatus, DishwasherStatus, \
-    DishwasherState
-from .const import *
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import TIME_MINUTES, TEMP_CELSIUS
+from homeassistant.const import TEMP_CELSIUS, TIME_MINUTES
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.update_coordinator import CoordinatorEntity, DataUpdateCoordinator
 from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.typing import StateType
+from homeassistant.helpers.update_coordinator import (CoordinatorEntity,
+                                                      DataUpdateCoordinator)
+
+from .client import WashingMachineStatus
+from .client.model import (DishwasherState, DishwasherStatus,
+                           DryerProgramState, MachineState, OvenStatus,
+                           TumbleDryerStatus)
+from .const import *
 
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, async_add_entities):
@@ -20,24 +23,24 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
     config_id = config_entry.entry_id
     coordinator = hass.data[DOMAIN][config_id][DATA_KEY_COORDINATOR]
 
-    if type(coordinator.data) is WashingMachineStatus:
+    if isinstance(coordinator.data, WashingMachineStatus):
         async_add_entities([
             CandyWashingMachineSensor(coordinator, config_id),
             CandyWashCycleStatusSensor(coordinator, config_id),
             CandyWashRemainingTimeSensor(coordinator, config_id)
         ])
-    elif type(coordinator.data) is TumbleDryerStatus:
+    elif isinstance(coordinator.data, TumbleDryerStatus):
         async_add_entities([
             CandyTumbleDryerSensor(coordinator, config_id),
             CandyTumbleStatusSensor(coordinator, config_id),
             CandyTumbleRemainingTimeSensor(coordinator, config_id)
         ])
-    elif type(coordinator.data) is OvenStatus:
+    elif isinstance(coordinator.data, OvenStatus):
         async_add_entities([
             CandyOvenSensor(coordinator, config_id),
             CandyOvenTempSensor(coordinator, config_id)
         ])
-    elif type(coordinator.data) is DishwasherStatus:
+    elif isinstance(coordinator.data, DishwasherStatus):
         async_add_entities([
             CandyDishwasherSensor(coordinator, config_id),
             CandyDishwasherRemainingTimeSensor(coordinator, config_id)

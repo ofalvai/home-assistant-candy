@@ -46,8 +46,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     session=async_get_clientsession(self.hass),
                     device_ip=user_input[CONF_IP_ADDRESS]
                 )
-        except Exception as e:  # pylint: disable=broad-except
-            _LOGGER.exception(e)
+        except Exception as err:  # pylint: disable=broad-except
+            _LOGGER.exception(err)
             errors["base"] = "detect_encryption"
         else:
             if encryption_type == Encryption.ENCRYPTION:
