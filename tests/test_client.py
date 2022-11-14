@@ -12,7 +12,6 @@ from custom_components.candy.client.model import (DishwasherStatus,
 from .common import *
 
 
-@pytest.mark.asyncio
 async def test_idle(hass, aioclient_mock):
     """Test parsing the status when turning on the machine and selecting WiFi mode"""
 
@@ -33,7 +32,6 @@ async def test_idle(hass, aioclient_mock):
     assert status.temp == 40
 
 
-@pytest.mark.asyncio
 async def test_delayed_start_wait(hass, aioclient_mock):
     """Test parsing the status when machine is waiting for a delayed start wash cycle"""
     aioclient_mock.get(
@@ -52,7 +50,6 @@ async def test_delayed_start_wait(hass, aioclient_mock):
     assert status.remaining_minutes == 50
 
 
-@pytest.mark.asyncio
 async def test_no_fillr_property(hass, aioclient_mock):
     """Test parsing the status when response doesn't contain the FillR property"""
     aioclient_mock.get(
@@ -70,7 +67,6 @@ async def test_no_fillr_property(hass, aioclient_mock):
     assert status.fill_percent is None
 
 
-@pytest.mark.asyncio
 async def test_detect_no_encryption(hass, aioclient_mock):
     aioclient_mock.get(
         f"http://{TEST_IP}/http-read.json?encrypted=0",
@@ -83,7 +79,6 @@ async def test_detect_no_encryption(hass, aioclient_mock):
     assert key is None
 
 
-@pytest.mark.asyncio
 async def test_detect_encryption_key(hass, aioclient_mock):
     aioclient_mock.get(
         f"http://{TEST_IP}/http-read.json?encrypted=0",
@@ -101,7 +96,6 @@ async def test_detect_encryption_key(hass, aioclient_mock):
     assert key == TEST_ENCRYPTION_KEY
 
 
-@pytest.mark.asyncio
 async def test_detect_encryption_without_key(hass, aioclient_mock):
     aioclient_mock.get(
         f"http://{TEST_IP}/http-read.json?encrypted=0",
@@ -119,7 +113,6 @@ async def test_detect_encryption_without_key(hass, aioclient_mock):
     assert key is None
 
 
-@pytest.mark.asyncio
 async def test_status_encryption_with_key(hass, aioclient_mock):
     aioclient_mock.get(
         f"http://{TEST_IP}/http-read.json",
@@ -134,7 +127,6 @@ async def test_status_encryption_with_key(hass, aioclient_mock):
     assert isinstance(status, DishwasherStatus)
 
 
-@pytest.mark.asyncio
 async def test_status_encryption_without_key(hass, aioclient_mock):
     aioclient_mock.get(
         f"http://{TEST_IP}/http-read.json",
