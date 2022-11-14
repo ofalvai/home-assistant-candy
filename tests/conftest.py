@@ -15,6 +15,7 @@
 # See here for more info: https://docs.pytest.org/en/latest/fixture.html (note that
 # pytest includes fixtures OOB which you can use as defined on this page)
 from unittest.mock import patch
+from aiolimiter import AsyncLimiter
 
 import pytest
 
@@ -38,3 +39,8 @@ def skip_notifications_fixture():
         "homeassistant.components.persistent_notification.async_dismiss"
     ):
         yield
+
+@pytest.fixture(name="disable_api_rate_limiter", autouse=True)
+def disable_api_rate_limiter():
+    with patch("custom_components.candy.client._LIMITER"):
+        yield AsyncLimiter(max_rate=1000, time_period=1)
