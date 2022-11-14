@@ -16,6 +16,7 @@ async def test_main_sensor_idle(hass: HomeAssistant, aioclient_mock: AiohttpClie
     assert state.state == "Idle"
     assert state.attributes == {
         'program': 1,
+        'program_code': 136,
         'temperature': 40,
         'spin_speed': 800,
         'remaining_minutes': 0,
@@ -94,6 +95,7 @@ async def test_main_sensor_no_pr(hass: HomeAssistant, aioclient_mock: AiohttpCli
     assert state.state == "Running"
     assert state.attributes == {
         'program': 6,
+        'program_code': 3,
         'temperature': 40,
         'spin_speed': 1000,
         'remaining_minutes': 46,
