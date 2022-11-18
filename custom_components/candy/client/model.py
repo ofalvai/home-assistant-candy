@@ -49,6 +49,7 @@ class WashingMachineStatus:
     machine_state: MachineState
     program_state: WashProgramState
     program: int
+    program_code: Optional[int]
     temp: int
     spin_speed: int
     remaining_minutes: int
@@ -61,6 +62,7 @@ class WashingMachineStatus:
             machine_state=MachineState.from_code(int(json["MachMd"])),
             program_state=WashProgramState.from_code(int(json["PrPh"])),
             program=int(json["Pr"]) if "Pr" in json else int(json["PrNm"]),
+            program_code=int(json["PrCode"]) if "PrCode" in json else None,
             temp=int(json["Temp"]),
             spin_speed=int(json["SpinSp"]) * 100,
             remaining_minutes=round(int(json["RemTime"]) / 60),

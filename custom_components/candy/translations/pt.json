@@ -1,0 +1,21 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "O dispositivo já está configurado"
+        },
+        "error": {
+            "unknown": "Erro inesperado",
+            "detect_encryption": "Falha ao detectar criptografia, verifique os logs."
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "ip_address": "Endereço IP do dispositivo",
+                    "password": "Chave de encriptação",
+                    "use_encryption": "Usar chave de criptografia"
+                }
+            }
+        }
+    },
+    "title": "Candy"
+}

@@ -1,0 +1,29 @@
+{
+  "state": {
+    "_": {
+      "Idle": "Inactif",
+      "Running": "En cours d'exécution",
+      "Paused": "En pause",
+      "Delayed start selection": "Sélection du démarrage différé",
+      "Delayed start programmed": "Démarrage différé programmé",
+      "Error": "Erreur",
+      "Finished": "Terminé",
+      "Stopped": "Arrêté",
+      "Pre-wash": "Pré-lavage",
+      "Wash": "Lavage",
+      "Rinse": "Rinçage",
+      "Last rinse": "Dernier rinçage",
+      "End": "Fin",
+      "Drying": "Séchage",
+      "Steam": "Vapeur",
+      "Spin - Good Night": "En Centrifugeuse - Mode Nuit",
+      "Spin": "En Centrifugeuse",
+      "Heating": "Chauffage",
+      "No Dry": "Non sec",
+      "Iron Dry": "Repassage à sec",
+      "Hang Dry": "Séchage à sec",
+      "Store Dry": "Rangement à sec",
+      "Bone Dry": "Extra sec"
+    }
+  }
+}

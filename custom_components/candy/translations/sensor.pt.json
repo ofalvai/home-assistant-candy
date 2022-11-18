@@ -1,0 +1,29 @@
+{
+  "state": {
+    "_": {
+      "Idle": "Parada",
+      "Running": "Em funcionamento",
+      "Paused": "Em pausa",
+      "Delayed start selection": "Seleção de início retardado",
+      "Delayed start programmed": "Início retardado programado",
+      "Error": "Erro",
+      "Finished": "Terminado",
+      "Stopped": "Parado",
+      "Pre-wash": "Pre-lavagem",
+      "Wash": "A lavar",
+      "Rinse": "Enxaguar",
+      "Last rinse": "Último enxaguamento",
+      "End": "Finito",
+      "Drying": "Secando",
+      "Steam": "Em vapor",
+      "Spin - Good Night": "Centrifugação - Modo Boa-noite",
+      "Spin": "A Centrifugar",
+      "Heating": "Aquecendo",
+      "No Dry": "Não secar",
+      "Iron Dry": "Ferro a seco",
+      "Hang Dry": "Pendurar a seco",
+      "Store Dry": "Armazenar a seco",
+      "Bone Dry": "Completamente seco"
+    }
+  }
+}

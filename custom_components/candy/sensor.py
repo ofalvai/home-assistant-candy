@@ -1,5 +1,6 @@
 from abc import abstractmethod
-from typing import Mapping, Any
+from typing import Any, Mapping
+
 
 from homeassistant.helpers.typing import StateType
 from .client import WashingMachineStatus
@@ -18,15 +19,22 @@ from .client.model import (
     DishwasherState,
 )
 from .const import *
+
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import TIME_MINUTES, TEMP_CELSIUS
+from homeassistant.const import TEMP_CELSIUS, TIME_MINUTES
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-    DataUpdateCoordinator,
-)
+
 from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.typing import StateType
+from homeassistant.helpers.update_coordinator import (CoordinatorEntity,
+                                                      DataUpdateCoordinator)
+
+from .client import WashingMachineStatus
+from .client.model import (DishwasherState, DishwasherStatus,
+                           DryerProgramState, MachineState, OvenStatus,
+                           TumbleDryerStatus)
+from .const import *
 
 
 async def async_setup_entry(
@@ -144,6 +152,7 @@ async def async_setup_entry(
                 CandyDishwasherRemainingTimeSensor(coordinator, config_id),
             ]
         )
+
     else:
         raise Exception(f"Unable to determine machine type: {coordinator.data}")
 
@@ -211,6 +220,9 @@ class CandyWashingMachineSensor(CandyBaseSensor):
 
         if status.fill_percent is not None:
             attributes["fill_percent"] = status.fill_percent
+
+        if status.program_code is not None:
+            attributes["program_code"] = status.program_code
 
         return attributes
 

@@ -19,7 +19,10 @@ PLAINTEXT_CHARSET_CODEPOINTS: list[int] = [ord(c) for c in string.printable]
 class Encryption(Enum):
     NO_ENCRYPTION = 1  # Use `encrypted=0` in request, response is plaintext JSON
     ENCRYPTION = 2  # Use `encrypted=1` in request, response is encrypted bytes in hex encoding
-    ENCRYPTION_WITHOUT_KEY = 3  # Use `encrypted=1` in request, response is unencrypted hex bytes (https://github.com/ofalvai/home-assistant-candy/issues/35#issuecomment-965557116)
+
+    # Use `encrypted=1` in request, response is unencrypted hex bytes
+    # https://github.com/ofalvai/home-assistant-candy/issues/35#issuecomment-965557116)
+    ENCRYPTION_WITHOUT_KEY = 3
 
 
 def find_key(encrypted_response: bytes) -> Optional[str]:
@@ -28,13 +31,13 @@ def find_key(encrypted_response: bytes) -> Optional[str]:
     ]
 
     number_of_keys = math.prod(len(l) for l in candidate_key_codepoints)
-    _LOGGER.info(f"{number_of_keys} keys to test")
+    _LOGGER.info("%d keys to test", number_of_keys)
 
     for key in itertools.product(*candidate_key_codepoints):
         decrypted = decrypt(key, encrypted_response)
         if _is_valid_json(decrypted):
             key_str = "".join(chr(point) for point in key)
-            _LOGGER.info(f"Potential key found: {key_str}")
+            _LOGGER.info("Potential key found: %s", key_str)
             return key_str
 
     return None

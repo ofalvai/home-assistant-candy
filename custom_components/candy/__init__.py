@@ -35,7 +35,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
                 _LOGGER.debug("Fetched status: %s", status)
                 return status
         except Exception as err:
-            raise UpdateFailed(f"Error communicating with API: {repr(err)}")
+            raise UpdateFailed(f"Error communicating with API: {repr(err)}") from err
 
     coordinator = DataUpdateCoordinator(
         hass,

@@ -1,8 +1,9 @@
 """Tests for various sensors"""
-from pytest_homeassistant_custom_component.common import MockConfigEntry, load_fixture
-from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import entity_registry, device_registry
+from homeassistant.helpers import device_registry, entity_registry
+from pytest_homeassistant_custom_component.common import load_fixture
+from pytest_homeassistant_custom_component.test_util.aiohttp import \
+    AiohttpClientMocker
 
 from .common import init_integration
 
@@ -16,6 +17,7 @@ async def test_main_sensor_idle(hass: HomeAssistant, aioclient_mock: AiohttpClie
     assert state.state == "Idle"
     assert state.attributes == {
         'program': 1,
+        'program_code': 136,
         'temperature': 40,
         'spin_speed': 800,
         'remaining_minutes': 0,
@@ -94,6 +96,7 @@ async def test_main_sensor_no_pr(hass: HomeAssistant, aioclient_mock: AiohttpCli
     assert state.state == "Running"
     assert state.attributes == {
         'program': 6,
+        'program_code': 3,
         'temperature': 40,
         'spin_speed': 1000,
         'remaining_minutes': 46,
@@ -107,10 +110,10 @@ async def test_main_sensor_no_pr(hass: HomeAssistant, aioclient_mock: AiohttpCli
 async def test_main_sensor_device_info(hass: HomeAssistant, aioclient_mock: AiohttpClientMocker):
     await init_integration(hass, aioclient_mock, load_fixture("washing_machine/idle.json"))
 
-    er = entity_registry.async_get(hass)
-    dr = device_registry.async_get(hass)
-    entry = er.async_get("sensor.washing_machine")
-    device = dr.async_get(entry.device_id)
+    entity_reg = entity_registry.async_get(hass)
+    device_reg = device_registry.async_get(hass)
+    entry = entity_reg.async_get("sensor.washing_machine")
+    device = device_reg.async_get(entry.device_id)
 
     assert device
     assert device.manufacturer == "Candy"
@@ -121,16 +124,16 @@ async def test_main_sensor_device_info(hass: HomeAssistant, aioclient_mock: Aioh
 async def test_sensors_device_info(hass: HomeAssistant, aioclient_mock: AiohttpClientMocker):
     await init_integration(hass, aioclient_mock, load_fixture("washing_machine/idle.json"))
 
-    er = entity_registry.async_get(hass)
-    dr = device_registry.async_get(hass)
+    entity_reg = entity_registry.async_get(hass)
+    device_reg = device_registry.async_get(hass)
 
-    main_sensor = er.async_get("sensor.washing_machine")
-    cycle_sensor = er.async_get("sensor.wash_cycle_status")
-    time_sensor = er.async_get("sensor.wash_cycle_remaining_time")
+    main_sensor = entity_reg.async_get("sensor.washing_machine")
+    cycle_sensor = entity_reg.async_get("sensor.wash_cycle_status")
+    time_sensor = entity_reg.async_get("sensor.wash_cycle_remaining_time")
 
-    main_device = dr.async_get(main_sensor.device_id)
-    cycle_device = dr.async_get(cycle_sensor.device_id)
-    time_device = dr.async_get(time_sensor.device_id)
+    main_device = device_reg.async_get(main_sensor.device_id)
+    cycle_device = device_reg.async_get(cycle_sensor.device_id)
+    time_device = device_reg.async_get(time_sensor.device_id)
 
     assert main_device
     assert cycle_device

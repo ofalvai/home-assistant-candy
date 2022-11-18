@@ -42,6 +42,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         }
 
         errors = {}
+
         if config_data[CONF_KEY_USE_ENCRYPTION] == True:
            try:
                async with async_timeout.timeout(40):
@@ -62,6 +63,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                    config_data[CONF_KEY_USE_ENCRYPTION] = True
                    config_data[CONF_PASSWORD] = ""
                return self.async_create_entry(title=CONF_INTEGRATION_TITLE, data=config_data)
+
         else:
             config_data[CONF_PASSWORD] = ""
             return self.async_create_entry(
