@@ -346,8 +346,6 @@ class HoodState(StatusCode):
 @dataclass
 class HoodStatus:
     machine_state: HoodState
-    light: bool
-    fan: bool
     grease_filter: bool
     carbon_Filter: bool
     warning: bool
@@ -357,8 +355,6 @@ class HoodStatus:
     def from_json(cls, json):
         return cls(
             machine_state=HoodStatus.parse_state(json),
-            light=json["Light"] == "1",
-            fan=int(json["Fan"]) > 0,
             grease_filter=json["GreaseFilter"] == "1",
             carbon_Filter=json["CarbonFilter"] == "1",
             warning=json["Warning"] == "1",
@@ -393,9 +389,9 @@ class FridgeState(StatusCode):
 
 @dataclass
 class FridgeStatus:
-    machine_state: HobState
-    cooling_temperature: bool
-    freezing_temperature: bool
+    machine_state: FridgeState
+    cooling_temperature: int
+    freezing_temperature: int
     eco_mode: bool
     super_freezing_mode: bool
     smart_cooling_mode: bool
