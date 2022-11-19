@@ -19,7 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 
 STEP_DATA_SCHEMA = vol.Schema({
     vol.Required(CONF_IP_ADDRESS): str,
-    vol.Required(CONF_KEY_USE_ENCRYPTION): bool    
+    #vol.Required(CONF_KEY_USE_ENCRYPTION): bool    
 })
 
 
@@ -37,8 +37,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return self.async_show_form(step_id="user", data_schema=STEP_DATA_SCHEMA)
 
         config_data = {
-            CONF_IP_ADDRESS: user_input[CONF_IP_ADDRESS],
-            CONF_KEY_USE_ENCRYPTION: user_input[CONF_KEY_USE_ENCRYPTION]
+            CONF_IP_ADDRESS: user_input[CONF_IP_ADDRESS]
+            #,CONF_KEY_USE_ENCRYPTION: user_input[CONF_KEY_USE_ENCRYPTION]
         }
 
         errors = {}
@@ -64,11 +64,11 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                    config_data[CONF_PASSWORD] = ""
                return self.async_create_entry(title=CONF_INTEGRATION_TITLE, data=config_data)
 
-        else:
-            config_data[CONF_PASSWORD] = ""
-            return self.async_create_entry(
-                title=CONF_INTEGRATION_TITLE, data=config_data
-            )
+        #else:
+        #   config_data[CONF_PASSWORD] = ""
+        #    return self.async_create_entry(
+        #        title=CONF_INTEGRATION_TITLE, data=config_data
+        #    )
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_DATA_SCHEMA, errors=errors
