@@ -1241,7 +1241,7 @@ class CandyFridgeSensor(CandyBaseSensor):
             "smart_cooling_mode": status.smart_cooling_mode,
             "door_locked": status.door_locked,
             "door_open": status.door_open,
-            "fan": status.fan,
+            "fan_level ": status.fan_level ,
             "remote_control": status.remote_control,
         }
 

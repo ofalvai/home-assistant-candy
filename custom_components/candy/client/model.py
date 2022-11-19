@@ -397,7 +397,7 @@ class FridgeStatus:
     smart_cooling_mode: bool
     door_locked: bool
     door_open: bool
-    fan: int
+    fan_level : int
     error: Optional[int]
     remote_control: bool
 
@@ -412,7 +412,7 @@ class FridgeStatus:
             smart_cooling_mode=json["Ice"] == "1",
             door_locked=json["Lck"] == "1",
             door_open=json["Door"] == "1",
-            fan=int(json["Fan"]),
+            fan_level =int(json["Fan"]),
             error=int(json["Error"]) if int(json["Error"]) != 0 in json else None,
             remote_control=json["WiFi"] == "1",
         )
