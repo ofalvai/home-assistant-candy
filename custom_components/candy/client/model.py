@@ -346,8 +346,8 @@ class HoodState(StatusCode):
 @dataclass
 class HoodStatus:
     machine_state: HoodState
-    grease_filter: bool
-    carbon_Filter: bool
+    grease_filter_clean_needed : bool
+    carbon_filter_clean_needed: bool
     warning: bool
     remote_control: bool
 
@@ -355,8 +355,8 @@ class HoodStatus:
     def from_json(cls, json):
         return cls(
             machine_state=HoodStatus.parse_state(json),
-            grease_filter=json["GreaseFilter"] == "1",
-            carbon_Filter=json["CarbonFilter"] == "1",
+            grease_filter_clean_needed =json["GreaseFilter"] == "1",
+            carbon_filter_clean_needed=json["CarbonFilter"] == "1",
             warning=json["Warning"] == "1",
             remote_control=json["WiFiStatus"] == "1",
         )

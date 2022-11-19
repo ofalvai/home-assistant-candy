@@ -1197,8 +1197,8 @@ class CandyHoodSensor(CandyBaseSensor):
 
         attributes = {
             "lock": status.lock,
-            "grease_filter": status.grease_filter,
-            "carbon_Filter": status.carbon_Filter,
+            "grease_filter_clean_needed ": status.grease_filter_clean_needed ,
+            "carbon_filter": status.carbon_filter_clean_needed,
             "warning": status.warning,
             "remote_control": status.remote_control
         }
