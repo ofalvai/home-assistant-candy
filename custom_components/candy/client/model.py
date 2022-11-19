@@ -204,7 +204,7 @@ class OvenStatus:
     program: int
     selection: OvenSelection
     temp: float
-    tempSet: float
+    temp_set: float
     temp_reached: bool
     program_length_minutes: Optional[int]
     remote_control: bool
@@ -219,7 +219,7 @@ class OvenStatus:
             temp=round(fahrenheit_to_celsius(int(json["TempRead"])))
             if not json["Program"].startswith("P")
             else int(json["TempRead"]) / 10,
-            tempSet=round(fahrenheit_to_celsius(int(json["TempSet"])))
+            temp_set=round(fahrenheit_to_celsius(int(json["TempSet"])))
             if not json["Program"].startswith("P")
             else int(json["TempSet"]) / 10,
             temp_reached=json["TempSetRaggiunta"] == "1",

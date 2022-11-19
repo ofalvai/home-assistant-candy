@@ -419,7 +419,7 @@ class CandyOvenSensor(CandyBaseSensor):
             "program": status.program,
             "selection": status.selection,
             "temperature": status.temp,
-            "temp_set": status.tempSet,
+            "temp_set": status.temp_set,
             "temperature_reached": status.temp_reached,
             "remote_control": status.remote_control,
         }
@@ -510,7 +510,7 @@ class CandyOvenSetTempSensor(CandyBaseSensor):
     @property
     def state(self) -> StateType:
         status: OvenStatus = self.coordinator.data
-        return status.tempSet
+        return status.temp_set
 
     @property
     def unit_of_measurement(self) -> str:
