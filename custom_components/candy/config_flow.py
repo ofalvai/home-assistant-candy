@@ -43,26 +43,26 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         errors = {}
 
-        if config_data[CONF_KEY_USE_ENCRYPTION] == True:
-           try:
-               async with async_timeout.timeout(40):
-                   encryption_type, key = await detect_encryption(
-                       session=async_get_clientsession(self.hass),
-                       device_ip=user_input[CONF_IP_ADDRESS]
-                   )
-           except Exception as e:  # pylint: disable=broad-except
-               _LOGGER.exception(e)
-               errors["base"] = "detect_encryption"
-           else:
-               if encryption_type == Encryption.ENCRYPTION:
-                   config_data[CONF_KEY_USE_ENCRYPTION] = True
-                   config_data[CONF_PASSWORD] = key
-               elif encryption_type == Encryption.NO_ENCRYPTION:
-                   config_data[CONF_KEY_USE_ENCRYPTION] = False
-               elif encryption_type == Encryption.ENCRYPTION_WITHOUT_KEY:
-                   config_data[CONF_KEY_USE_ENCRYPTION] = True
-                   config_data[CONF_PASSWORD] = ""
-               return self.async_create_entry(title=CONF_INTEGRATION_TITLE, data=config_data)
+        #if config_data[CONF_KEY_USE_ENCRYPTION] == True:
+        try:
+            async with async_timeout.timeout(40):
+                encryption_type, key = await detect_encryption(
+                    session=async_get_clientsession(self.hass),
+                    device_ip=user_input[CONF_IP_ADDRESS]
+                )
+        except Exception as e:  # pylint: disable=broad-except
+            _LOGGER.exception(e)
+            errors["base"] = "detect_encryption"
+        else:
+            if encryption_type == Encryption.ENCRYPTION:
+                config_data[CONF_KEY_USE_ENCRYPTION] = True
+                config_data[CONF_PASSWORD] = key
+            elif encryption_type == Encryption.NO_ENCRYPTION:
+                config_data[CONF_KEY_USE_ENCRYPTION] = False
+            elif encryption_type == Encryption.ENCRYPTION_WITHOUT_KEY:
+                config_data[CONF_KEY_USE_ENCRYPTION] = True
+                config_data[CONF_PASSWORD] = ""
+            return self.async_create_entry(title=CONF_INTEGRATION_TITLE, data=config_data)
 
         #else:
         #   config_data[CONF_PASSWORD] = ""
