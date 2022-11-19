@@ -75,10 +75,8 @@ class CandyClient:
                     decrypted_text = bytes.fromhex(resp_hex)
                 resp_json = json.loads(decrypted_text)
             else:
-                try:
-                    resp_json = await resp.json(content_type="text/html")
-                except Exception:
-                    resp_json = await resp.json()
+                resp_json = await resp.json(content_type="text/html")
+
 
             _LOGGER.debug(resp_json)
 
