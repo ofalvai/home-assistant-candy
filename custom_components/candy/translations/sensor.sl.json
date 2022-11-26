@@ -1,0 +1,39 @@
+{
+  "state": {
+    "_": {
+      "Idle": "Prost",
+      "Running": "Zagnan",
+      "Paused": "Ustavljen",
+      "Delayed start selection": "Izbran zakasnjen start",
+      "Delayed start programmed": "Zakasnjen start programiran",
+      "Error": "Napaka",
+      "Finished": "Končan",
+      "Stopped": "Ustavljen",
+      "Pre-wash": "Pred pranje",
+      "Wash": "Pranje",
+      "Rinse": "Izplakovanje",
+      "Last rinse": "Zadnje izplakovanje",
+      "End": "Končano",
+      "Drying": "Sušenje",
+      "Steam": "Para",
+      "Spin - Good Night": "Nočna centrifuga",
+      "Spin": "Centrifuga",
+      "Heating": "Gretje",
+      "No Dry": "Brez sušenja",
+      "Iron Dry": "Sušenje za likanje",
+      "Hang Dry": "Sušenje za obešanje",
+      "Store Dry": "Sušenje za shrambo",
+      "Bone Dry": "Extra sušenje",
+
+      "Convection": "Konvekcija / Convection",
+      "On differend levels": "Na več nivojih",
+      "Convection and fan": "Konvekcija in ventilator",
+      "Defrosting": "Odmrzovanje",
+      "Grill": "Žar",
+      "Pizza": "Pizza",
+      "Bottom heater": "Spodnji Grelec",
+      "Grill and fan": "Žar in ventilator"
+
+    }
+  }
+}

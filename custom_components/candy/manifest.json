@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "config_flow": true,
   "documentation": "https://github.com/ofalvai/home-assistant-candy",
+
   "issue_tracker": "https://github.com/ofalvai/home-assistant-candy/issues",
   "requirements": [
     "backoff~=2.0",
