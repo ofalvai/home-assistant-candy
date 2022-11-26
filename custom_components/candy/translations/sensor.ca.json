@@ -1,0 +1,29 @@
+{
+  "state": {
+    "_": {
+      "Idle": "En repòs",
+      "Running": "En marxa",
+      "Paused": "En pausa",
+      "Delayed start selection": "Selecció d'inici retardat",
+      "Delayed start programmed": "Inici retardat programat",
+      "Error": "Error",
+      "Finished": "Finalitzat",
+      "Stopped": "Parat",
+      "Pre-wash": "Prerentat",
+      "Wash": "Rentant",
+      "Rinse": "Esbandint",
+      "Last rinse": "Últim esbandit",
+      "End": "Acabat",
+      "Drying": "Assecant",
+      "Steam": "Vapor",
+      "Spin - Good Night": "Centrifugant - Modalitat Nit",
+      "Spin": "Centrifugant",
+      "Heating": "Escalfant",
+      "No Dry": "No Assecat",
+      "Iron Dry": "Assecat per Planxar",
+      "Hang Dry": "Assecat per Estendre",
+      "Store Dry": "Assecat per Emmagatzemar",
+      "Bone Dry": "Assecat Extra"
+    }
+  }
+}
