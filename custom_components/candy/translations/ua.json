@@ -1,0 +1,21 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Пристрій вже налаштований"
+        },
+        "error": {
+            "unknown": "Несподівана помилка",
+            "detect_encryption": "Не вдалося виявити шифрування, перевірте логи"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "ip_address": "IP-адреса пристрою",
+                    "password": "Ключ шифрування",
+                    "use_encryption": "Використовувати ключ шифрування"
+                }
+            }
+        }
+    },
+    "title": "Candy"
+}
