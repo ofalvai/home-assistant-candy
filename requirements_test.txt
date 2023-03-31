@@ -1,5 +1,5 @@
 pytest-homeassistant-custom-component==0.12.57
 
 # Component dependencies
-backoff~=2.0
+backoff~=2.2
 aiolimiter~=1.0
