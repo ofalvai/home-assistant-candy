@@ -30,9 +30,10 @@ jobs:
           .venv/bin/pip install wheel
           .venv/bin/pip install -r requirements_test.txt
       - name: Test with pytest
+        # asyncio-mode=auto fuckery: https://github.com/MatthewFlamm/pytest-homeassistant-custom-component/issues/161
         run: |
           .venv/bin/python -m pytest \
-            --asyncio-mode=auto \ # https://github.com/MatthewFlamm/pytest-homeassistant-custom-component/issues/161
+            --asyncio-mode=auto \
             --cov-report term-missing \
             --cov-report xml \
             --cov=custom_components.candy
