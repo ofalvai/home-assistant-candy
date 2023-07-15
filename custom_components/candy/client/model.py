@@ -65,7 +65,7 @@ class WashingMachineStatus:
             program_code=int(json["PrCode"]) if "PrCode" in json else None,
             temp=int(json["Temp"]),
             spin_speed=int(json["SpinSp"]) * 100,
-            remaining_minutes=round(int(json["RemTime"]) / 60),
+            remaining_minutes=round(int(json["RemTime"])),
             remote_control=json["WiFiStatus"] == "1",
             fill_percent=int(json["FillR"]) if "FillR" in json else None
         )
