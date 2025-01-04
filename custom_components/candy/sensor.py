@@ -3,7 +3,10 @@ from typing import Any, Mapping
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import TEMP_CELSIUS, TIME_MINUTES
+from homeassistant.const import (
+    UnitOfTime,
+    UnitOfTemperature,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.typing import StateType
@@ -171,7 +174,7 @@ class CandyWashRemainingTimeSensor(CandyBaseSensor):
 
     @property
     def unit_of_measurement(self) -> str:
-        return TIME_MINUTES
+        return UnitOfTime.MINUTES
 
     @property
     def icon(self) -> str:
@@ -277,7 +280,7 @@ class CandyTumbleRemainingTimeSensor(CandyBaseSensor):
 
     @property
     def unit_of_measurement(self) -> str:
-        return TIME_MINUTES
+        return UnitOfTime.MINUTES
 
     @property
     def icon(self) -> str:
@@ -350,7 +353,7 @@ class CandyOvenTempSensor(CandyBaseSensor):
 
     @property
     def unit_of_measurement(self) -> str:
-        return TEMP_CELSIUS
+        return UnitOfTemperature.CELSIUS
 
     @property
     def icon(self) -> str:
@@ -432,7 +435,7 @@ class CandyDishwasherRemainingTimeSensor(CandyBaseSensor):
 
     @property
     def unit_of_measurement(self) -> str:
-        return TIME_MINUTES
+        return UnitOfTime.MINUTES
 
     @property
     def icon(self) -> str:
