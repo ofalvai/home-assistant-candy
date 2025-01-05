@@ -66,7 +66,7 @@ async def test_no_encryption_detected(hass, detect_no_encryption): # pylint: dis
     )
 
     # Check that the config flow shows the user form as the first step
-    assert result["type"] == data_entry_flow.RESULT_TYPE_FORM
+    assert result["type"] == data_entry_flow.FlowResultType.FORM
     assert result["step_id"] == "user"
 
     result = await hass.config_entries.flow.async_configure(
@@ -75,7 +75,7 @@ async def test_no_encryption_detected(hass, detect_no_encryption): # pylint: dis
 
     # Check that the config flow is complete and a new entry is created with
     # the input data
-    assert result["type"] == data_entry_flow.RESULT_TYPE_CREATE_ENTRY
+    assert result["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
     assert result["title"] == "Candy"
     assert result["data"] == {
         CONF_IP_ADDRESS: "192.168.0.66",
@@ -93,7 +93,7 @@ async def test_detected_encryption_and_key_found(hass, detect_encryption_find_ke
     )
 
     # Check that the config flow shows the user form as the first step
-    assert result["type"] == data_entry_flow.RESULT_TYPE_FORM
+    assert result["type"] == data_entry_flow.FlowResultType.FORM
     assert result["step_id"] == "user"
 
     result = await hass.config_entries.flow.async_configure(
@@ -102,7 +102,7 @@ async def test_detected_encryption_and_key_found(hass, detect_encryption_find_ke
 
     # Check that the config flow is complete and a new entry is created with
     # the input data
-    assert result["type"] == data_entry_flow.RESULT_TYPE_CREATE_ENTRY
+    assert result["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
     assert result["title"] == "Candy"
     assert result["data"] == {
         CONF_IP_ADDRESS: "192.168.0.66",
@@ -120,14 +120,14 @@ async def test_detected_encryption_and_key_not_found(hass, detect_encryption_key
     )
 
     # Check that the config flow shows the user form as the first step
-    assert result["type"] == data_entry_flow.RESULT_TYPE_FORM
+    assert result["type"] == data_entry_flow.FlowResultType.FORM
     assert result["step_id"] == "user"
 
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"], user_input={CONF_IP_ADDRESS: "192.168.0.66"}
     )
 
-    assert result["type"] == data_entry_flow.RESULT_TYPE_FORM
+    assert result["type"] == data_entry_flow.FlowResultType.FORM
 
     assert result["errors"] == {"base": "detect_encryption"}
 
@@ -140,7 +140,7 @@ async def test_detected_encryption_without_key(hass, detect_encryption_without_k
     )
 
     # Check that the config flow shows the user form as the first step
-    assert result["type"] == data_entry_flow.RESULT_TYPE_FORM
+    assert result["type"] == data_entry_flow.FlowResultType.FORM
     assert result["step_id"] == "user"
 
     result = await hass.config_entries.flow.async_configure(
@@ -149,7 +149,7 @@ async def test_detected_encryption_without_key(hass, detect_encryption_without_k
 
     # Check that the config flow is complete and a new entry is created with
     # the input data
-    assert result["type"] == data_entry_flow.RESULT_TYPE_CREATE_ENTRY
+    assert result["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
     assert result["title"] == "Candy"
     assert result["data"] == {
         CONF_IP_ADDRESS: "192.168.0.66",
