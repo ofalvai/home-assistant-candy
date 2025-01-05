@@ -1,4 +1,4 @@
-pytest-homeassistant-custom-component==0.13.114
+pytest-homeassistant-custom-component~=0.13.114
 
 # Component dependencies
 backoff~=2.0
