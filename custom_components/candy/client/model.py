@@ -146,10 +146,18 @@ class DishwasherStatus:
 
     @classmethod
     def from_json(cls, json):
+        # PROTECTION REBOOT TRICK :
+        # Si StartStop vaut "0", la machine est physiquement arrêtée/en attente.
+        # On force l'état à IDLE (0) et le temps restant à 0, peu importe les délires de la carte Candy.
+        is_stopped = json.get("StartStop") == "0"
+        
+        forced_machine_state = DishwasherState.IDLE if is_stopped else DishwasherState.from_code(int(json["StatoDWash"]))
+        forced_remaining_minutes = 0 if is_stopped else int(json["RemTime"])
+        
         return cls(
-            machine_state=DishwasherState.from_code(int(json["StatoDWash"])),
+            machine_state=forced_machine_state,
             program=DishwasherStatus.parse_program(json),
-            remaining_minutes=int(json["RemTime"]),
+            remaining_minutes=forced_remaining_minutes,
             delayed_start_hours=int(json["DelayStart"]) if json["DelayStart"] != "0" else None,
             door_open=json["OpenDoor"] != "0",
             door_open_allowed=json["OpenDoorOpt"] == "1" if "OpenDoorOpt" in json else None,
